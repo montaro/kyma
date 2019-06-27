@@ -10,6 +10,11 @@ import (
 	"github.com/kyma-project/kyma/components/event-bus/internal/trace"
 )
 
+const (
+	V1 = "v1"
+	V2 = "v2"
+)
+
 // KnativePublishApplication represents a Knative PublishApplication
 type KnativePublishApplication struct {
 	started          bool
@@ -49,7 +54,8 @@ func (app *KnativePublishApplication) start() {
 	// mark the app as started and register the readiness and the publish handlers
 	app.started = true
 	app.registerReadinessProbe()
-	app.registerPublishHandler()
+	app.registerPublishV1Handler()
+	app.registerPublishV2Handler()
 }
 
 // ServeMux encapsulates an http.ServeMux
@@ -61,8 +67,14 @@ func (app *KnativePublishApplication) registerReadinessProbe() {
 	app.serveMux.HandleFunc("/v1/status/ready", handlers.ReadinessProbeHandler())
 }
 
-func (app *KnativePublishApplication) registerPublishHandler() {
-	knativePublishHandler := handlers.KnativePublishHandler(app.knativeLib, app.knativePublisher, app.tracer, app.options)
+func (app *KnativePublishApplication) registerPublishV1Handler() {
+	knativePublishHandler := handlers.KnativePublishHandler(V1, app.knativeLib, app.knativePublisher, app.tracer, app.options)
 	requestSizeLimitHandler := handlers.WithRequestSizeLimiting(knativePublishHandler, app.options.MaxRequestSize)
 	app.serveMux.HandleFunc("/v1/events", requestSizeLimitHandler)
+}
+
+func (app *KnativePublishApplication) registerPublishV2Handler() {
+	knativePublishHandler := handlers.KnativePublishHandler(V2, app.knativeLib, app.knativePublisher, app.tracer, app.options)
+	requestSizeLimitHandler := handlers.WithRequestSizeLimiting(knativePublishHandler, app.options.MaxRequestSize)
+	app.serveMux.HandleFunc("/v2/events", requestSizeLimitHandler)
 }
