@@ -1,15 +1,16 @@
 package v2
 
 import (
-	api "github.com/kyma-project/kyma/components/event-bus/api/publish"
 	"net/http"
+
+	api "github.com/kyma-project/kyma/components/event-bus/api/publish"
 )
 
 const (
 	// ErrorMessageMissingSourceID represents the error message for `ErrorTypeMissingFieldOrHeader`
 	ErrorMessageMissingSourceID = "missing 'source' field in the json payload"
-
 )
+
 // ErrorResponseMissingFieldSpecVersion returns an API error instance for the missing field spec version error.
 func ErrorResponseMissingFieldSpecVersion() (response *api.Error) {
 	return api.CreateMissingFieldError(FieldSpecVersion)
