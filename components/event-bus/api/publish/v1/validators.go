@@ -1,9 +1,10 @@
 package v1
 
 import (
-	api "github.com/kyma-project/kyma/components/event-bus/api/publish"
 	"regexp"
 	"time"
+
+	api "github.com/kyma-project/kyma/components/event-bus/api/publish"
 )
 
 var (

@@ -21,19 +21,13 @@ const (
 	// AllowedEventIDChars regex
 	AllowedEventIDChars = `^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$`
 
-	// AllowedSourceIDChars regex
-	AllowedSourceIDChars = `^[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?)*$`
-	// AllowedEventTypeChars regex
-	AllowedEventTypeChars = `^[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?)*$`
 	// AllowedEventTypeVersionChars regex
 	AllowedEventTypeVersionChars = `^[a-zA-Z0-9]+$`
 
-	// HeaderSourceID heaver
-	HeaderSourceID = "Source"
-
-	//SpecVersionV3.0 Value
+	//SpecVersionV3 Value
 	SpecVersionV3 = "0.3"
 )
+
 // Extensions type
 type Extensions = map[string]interface{}
 
@@ -50,10 +44,9 @@ type EventRequestV3 struct {
 	TypeVersion         string   `json:"eventtypeversion"`
 	Time                string   `json:"time"`
 	Data                AnyValue `json:"data"`
-	SourceIDFromHeader  bool
 }
 
-// CloudEvent represents the event to be persisted to NATS
+// CloudEventV3 represents the event to be persisted to NATS
 type CloudEventV3 struct {
 	EventRequestV3
 	Extensions Extensions `json:"extensions,omitempty"`

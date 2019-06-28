@@ -15,7 +15,7 @@ const (
 	requestBodyTooLargeErrorMessage = "http: request body too large"
 )
 
-// ValidateRequest validates the http.Request and returns an api.Request instance and an api.Error.
+// ValidateRequestV1 validates the http.Request and returns an api.Request instance and an api.Error.
 func ValidateRequestV1(r *http.Request) (*api.Request, *api.Error) {
 	// validate the http method
 	if r.Method != http.MethodPost {
@@ -52,7 +52,7 @@ func ValidateRequestV1(r *http.Request) (*api.Request, *api.Error) {
 	return publishRequest, nil
 }
 
-// ValidateRequest validates the http.Request and returns an api.Request instance and an api.Error.
+// ValidateRequestV2 validates the http.Request and returns an api.Request instance and an api.Error.
 func ValidateRequestV2(r *http.Request) (*v2.EventRequestV3, *api.Error) {
 	// validate the http method
 	if r.Method != http.MethodPost {

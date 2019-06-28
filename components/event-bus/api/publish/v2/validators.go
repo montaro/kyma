@@ -1,9 +1,10 @@
 package v2
 
 import (
-	api "github.com/kyma-project/kyma/components/event-bus/api/publish"
 	"regexp"
 	"time"
+
+	api "github.com/kyma-project/kyma/components/event-bus/api/publish"
 )
 
 var (
@@ -18,19 +19,19 @@ var (
 //ValidatePublish validates a publish POST request
 func ValidatePublish(r *EventRequestV3, opts *api.EventOptions) *api.Error {
 	if len(r.Source) == 0 {
-		return api.ErrorResponseMissingFieldSourceID()
+		return ErrorResponseMissingFieldSourceID()
 	}
 	if len(r.SpecVersion) == 0 {
 		return ErrorResponseMissingFieldSpecVersion()
 	}
 	if len(r.Type) == 0 {
-		return api.ErrorResponseMissingFieldEventType()
+		return ErrorResponseMissingFieldEventType()
 	}
 	if len(r.TypeVersion) == 0 {
-		return api.ErrorResponseMissingFieldEventTypeVersion()
+		return ErrorResponseMissingFieldEventTypeVersion()
 	}
 	if len(r.Time) == 0 {
-		return api.ErrorResponseMissingFieldEventTime()
+		return ErrorResponseMissingFieldEventTime()
 	}
 	if r.Data == nil {
 		return api.ErrorResponseMissingFieldData()
@@ -51,15 +52,15 @@ func ValidatePublish(r *EventRequestV3, opts *api.EventOptions) *api.Error {
 
 	// validate the fully-qualified topic name components
 	if !isValidSourceID(r.Source) {
-		return api.ErrorResponseWrongSourceID(r.SourceIDFromHeader)
+		return ErrorResponseWrongSourceID()
 	}
 	if !isValidEventType(r.Type) {
-		return api.ErrorResponseWrongEventType()
+		return ErrorResponseWrongEventType()
 	}
 	if !isValidEventTypeVersion(r.TypeVersion) {
-		return api.ErrorResponseWrongEventTypeVersion()
+		return ErrorResponseWrongEventTypeVersion()
 	}
-	if r.SpecVersion!=SpecVersionV3 {
+	if r.SpecVersion != SpecVersionV3 {
 		return ErrorResponseWrongSpecVersion()
 	}
 
@@ -67,7 +68,7 @@ func ValidatePublish(r *EventRequestV3, opts *api.EventOptions) *api.Error {
 		return ErrorResponseWrongEventTime()
 	}
 	if len(r.ID) > 0 && !isValidEventID(r.ID) {
-		return api.ErrorResponseWrongEventID()
+		return ErrorResponseWrongEventID()
 	}
 	return nil
 }

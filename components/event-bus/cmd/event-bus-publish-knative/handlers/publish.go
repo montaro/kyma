@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+
 	"github.com/kyma-project/kyma/components/event-bus/api/publish/v1"
-	v2 "github.com/kyma-project/kyma/components/event-bus/api/publish/v2"
+	publishv2 "github.com/kyma-project/kyma/components/event-bus/api/publish/v2"
 
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"github.com/gofrs/uuid"
 	api "github.com/kyma-project/kyma/components/event-bus/api/publish"
 	"github.com/kyma-project/kyma/components/event-bus/cmd/event-bus-publish-knative/publisher"
+	constants "github.com/kyma-project/kyma/components/event-bus/cmd/event-bus-publish-knative/util"
 	"github.com/kyma-project/kyma/components/event-bus/cmd/event-bus-publish-knative/validators"
 	"github.com/kyma-project/kyma/components/event-bus/internal/knative/publish/opts"
 	knative "github.com/kyma-project/kyma/components/event-bus/internal/knative/util"
@@ -54,11 +56,11 @@ func KnativePublishHandler(version string, knativeLib *knative.KnativeLib, knati
 		var status string
 
 		switch version {
-		case "v1":
+		case constants.EventAPIV1:
 			// handle the knativeLib publish request
 			message, channelName, namespace, err, status = handleKnativePublishRequestV1(w, r, knativeLib,
 				knativePublisher, traceContext, opts)
-		case "v2":
+		case constants.EventAPIV2:
 			// handle the knativeLib publish request
 			message, channelName, namespace, err, status = handleKnativePublishRequestV2(w, r, knativeLib, knativePublisher,
 				traceContext, opts)
@@ -109,7 +111,7 @@ func handleKnativePublishRequestV1(w http.ResponseWriter, r *http.Request, knati
 	publishRequest, err := validators.ValidateRequestV1(r)
 	if err != nil {
 		log.Printf("validate request failed: %v", err)
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
@@ -117,14 +119,14 @@ func handleKnativePublishRequestV1(w http.ResponseWriter, r *http.Request, knati
 	if hasSourceID := setSourceID(publishRequest, &r.Header); !hasSourceID {
 		err = api.ErrorResponseMissingFieldSourceID()
 		log.Printf("source-id missing: %v", err)
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
 	// validate the publish request
 	if err = v1.ValidatePublish(publishRequest, opts.EventOptions); err != nil {
 		log.Printf("validate publish failed: %v", err)
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
@@ -134,7 +136,7 @@ func handleKnativePublishRequestV1(w http.ResponseWriter, r *http.Request, knati
 		if errEventID != nil {
 			err = api.ErrorResponseInternalServer()
 			log.Printf("EventID generation failed: %v", err)
-			_ = SendJSONError(w, err)
+			_ = sendJSONError(w, err)
 			return nil, nil, nil, err, publisher.FAILED
 		}
 		publishRequest.EventID = eventID
@@ -150,7 +152,7 @@ func handleKnativePublishRequestV1(w http.ResponseWriter, r *http.Request, knati
 	if errMarshal != nil {
 		log.Printf("marshal message failed: %v", errMarshal.Error())
 		err = api.ErrorResponseInternalServer()
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
@@ -159,15 +161,15 @@ func handleKnativePublishRequestV1(w http.ResponseWriter, r *http.Request, knati
 		&publishRequest.EventTypeVersion)
 	if err = validators.ValidateChannelNameLength(&channelName, opts.MaxChannelNameLength); err != nil {
 		log.Printf("publish message failed: %v", err)
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
 	// publish the message
 	err, status := (*knativePublisher).Publish(knativeLib, &channelName, &defaultChannelNamespace, &message.Headers,
-		&messagePayload, publishRequest)
+		&messagePayload, publishRequest.SourceID, publishRequest.EventType, publishRequest.EventTypeVersion)
 	if err != nil {
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 	// Succeed if the Status is IGNORED | PUBLISHED
@@ -193,23 +195,6 @@ func setSourceID(publishRequest *api.Request, header *http.Header) bool {
 	if sourceID := header.Get(api.HeaderSourceID); len(sourceID) > 0 {
 		publishRequest.SourceID = sourceID
 		publishRequest.SourceIDFromHeader = true
-		return true
-	}
-
-	// source-id is missing
-	return false
-}
-
-func setCESource(event *v2.EventRequestV3, header *http.Header) bool {
-	// source-id in the request body
-	if len(event.Source) > 0 {
-		return true
-	}
-
-	// source-id in the request headers
-	if sourceID := header.Get(api.HeaderSourceID); len(sourceID) > 0 {
-		event.Source = sourceID
-		event.SourceIDFromHeader = true
 		return true
 	}
 
@@ -247,6 +232,28 @@ func buildMessage(publishRequest *api.Request, traceContext *api.TraceContext,
 
 	return message
 }
+func buildCEMessage(event *publishv2.EventRequestV3, traceContext *api.TraceContext,
+	headers map[string][]string) *Message {
+
+	headers[trace.HeaderSourceID] = []string{event.Source}
+	headers[trace.HeaderEventType] = []string{event.Type}
+	headers[trace.HeaderEventTypeVersion] = []string{event.TypeVersion}
+	headers[trace.HeaderEventID] = []string{event.ID}
+	headers[trace.HeaderEventTime] = []string{event.Time}
+	headers[trace.HeaderSpecVersion] = []string{trace.SpecVersion}
+	if traceContext != nil {
+		for k, v := range *traceContext {
+			headers[k] = []string{v}
+		}
+	}
+
+	message := &Message{
+		Headers: headers,
+		Payload: event.Data,
+	}
+
+	return message
+}
 
 func getPublishStatusReason(status *string) string {
 	var reason string
@@ -266,7 +273,7 @@ func addSpanTagsForMessage(publishSpan *opentracing.Span, message *Message) {
 	trace.SetSpanTags(publishSpan, &tags)
 }
 
-func SendJSONError(w http.ResponseWriter, err *api.Error) error {
+func sendJSONError(w http.ResponseWriter, err *api.Error) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader((*err).Status)
 	return json.NewEncoder(w).Encode(*err)
@@ -279,22 +286,22 @@ func handleKnativePublishRequestV2(w http.ResponseWriter, r *http.Request, knati
 	event, err := validators.ValidateRequestV2(r)
 	if err != nil {
 		log.Printf("validate request failed: %v", err)
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
-	// set source-id from the headers if missing in the payload
-	if hasSourceID := setCESource(event, &r.Header); !hasSourceID {
-		err = api.ErrorResponseMissingFieldSourceID()
-		log.Printf("source-id missing: %v", err)
-		_ = SendJSONError(w, err)
-		return nil, nil, nil, err, publisher.FAILED
-	}
+	//set source-id from the headers if missing in the payload
+	//if hasSourceID := setCESource(event, &r.Header); !hasSourceID {
+	//	err = api.ErrorResponseMissingFieldSourceID()
+	//	log.Printf("source-id missing: %v", err)
+	//	_ = SendJSONError(w, err)
+	//	return nil, nil, nil, err, publisher.FAILED
+	//}
 
 	// validate the publish request
-	if err = v2.ValidatePublish(event, opts.EventOptions); err != nil {
+	if err = publishv2.ValidatePublish(event, opts.EventOptions); err != nil {
 		log.Printf("validate publish failed: %v", err)
-		_ = SendJSONError(w, err)
+		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
@@ -310,37 +317,36 @@ func handleKnativePublishRequestV2(w http.ResponseWriter, r *http.Request, knati
 	//	event.ID = eventID
 	//}
 
-	//headers := filterCEHeaders(r)
-	//
-	//// build the message from the publish-request and the trace-context
-	//message := buildMessage(event, context, headers)
-	//
-	//// marshal the message
-	//messagePayload, errMarshal := json.Marshal(message.Payload)
-	//if errMarshal != nil {
-	//	log.Printf("marshal message failed: %v", errMarshal.Error())
-	//	err = api.ErrorResponseInternalServer()
-	//	_ = handlers.SendJSONError(w, err)
-	//	return nil, nil, nil, err, publisher.FAILED
-	//}
-	//
-	//// get the channel name and validate its length
-	//channelName := eventBusUtil.GetChannelName(&event.SourceID, &event.EventType,
-	//	&event.EventTypeVersion)
-	//if err = validators.ValidateChannelNameLength(&channelName, opts.MaxChannelNameLength); err != nil {
-	//	log.Printf("publish message failed: %v", err)
-	//	_ = handlers.SendJSONError(w, err)
-	//	return nil, nil, nil, err, publisher.FAILED
-	//}
-	//
-	//// publish the message
-	//err, status := (*knativePublisher).Publish(knativeLib, &channelName, &defaultChannelNamespace, &message.Headers,
-	//	&messagePayload, event)
-	//if err != nil {
-	//	_ = handlers.SendJSONError(w, err)
-	//	return nil, nil, nil, err, publisher.FAILED
-	//}
-	//// Succeed if the Status is IGNORED | PUBLISHED
-	//return message, &channelName, &defaultChannelNamespace, nil, status
-	return nil, nil, nil, nil, ""
+	headers := filterCEHeaders(r)
+
+	// build the message from the publish-request and the trace-context
+	message := buildCEMessage(event, context, headers)
+
+	// marshal the message
+	messagePayload, errMarshal := json.Marshal(message.Payload)
+	if errMarshal != nil {
+		log.Printf("marshal message failed: %v", errMarshal.Error())
+		err = api.ErrorResponseInternalServer()
+		_ = sendJSONError(w, err)
+		return nil, nil, nil, err, publisher.FAILED
+	}
+
+	// get the channel name and validate its length
+	channelName := eventBusUtil.GetChannelName(&event.Source, &event.Type,
+		&event.TypeVersion)
+	if err = validators.ValidateChannelNameLength(&channelName, opts.MaxChannelNameLength); err != nil {
+		log.Printf("publish message failed: %v", err)
+		_ = sendJSONError(w, err)
+		return nil, nil, nil, err, publisher.FAILED
+	}
+
+	// publish the message
+	err, status := (*knativePublisher).Publish(knativeLib, &channelName, &defaultChannelNamespace, &message.Headers,
+		&messagePayload, event.Source, event.Type, event.TypeVersion)
+	if err != nil {
+		_ = sendJSONError(w, err)
+		return nil, nil, nil, err, publisher.FAILED
+	}
+	// Succeed if the Status is IGNORED | PUBLISHED
+	return message, &channelName, &defaultChannelNamespace, nil, status
 }

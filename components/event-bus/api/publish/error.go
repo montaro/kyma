@@ -97,14 +97,17 @@ func ErrorResponseRequestBodyTooLarge() (response *Error) {
 	return apiError
 }
 
+// ErrorInvalidSourceIDLength creates an API Error response in case Source ID length exceeded the maximum
 func ErrorInvalidSourceIDLength(sourceIDMaxLength int) *Error {
 	return ErrorInvalidFieldLength(FieldSourceID, sourceIDMaxLength)
 }
 
+// ErrorInvalidEventTypeLength creates an API Error response in case Event Type length exceeded the maximum
 func ErrorInvalidEventTypeLength(eventTypeMaxLength int) *Error {
 	return ErrorInvalidFieldLength(FieldEventType, eventTypeMaxLength)
 }
 
+// ErrorInvalidEventTypeVersionLength creates an API Error response in case Event Type Version length exceeded the maximum
 func ErrorInvalidEventTypeVersionLength(eventTypeVersionMaxLength int) *Error {
 	return ErrorInvalidFieldLength(FieldEventTypeVersion, eventTypeVersionMaxLength)
 }
@@ -212,6 +215,7 @@ func ErrorResponseWrongSourceID(sourceIDFromHeader bool) (response *Error) {
 	return CreateInvalidFieldError(FieldSourceID)
 }
 
+// CreateMissingFieldError creates an Error for a missing field
 func CreateMissingFieldError(field interface{}) (response *Error) {
 	apiErrorDetail := ErrorDetail{
 		Field:    field.(string),
@@ -224,6 +228,7 @@ func CreateMissingFieldError(field interface{}) (response *Error) {
 	return &apiError
 }
 
+// CreateInvalidFieldError creates an Error for an invalid field
 func CreateInvalidFieldError(field interface{}) (response *Error) {
 	return createInvalidFieldErrorWithType(field, ErrorTypeInvalidField)
 }
