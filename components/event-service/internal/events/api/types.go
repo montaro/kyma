@@ -80,7 +80,7 @@ type SendEventParameters struct {
 type SendEventParametersV3 struct {
 	SourceID            string   `json:"source"`
 	EventType           string   `json:"type"`
-	EventTypeVersion    string   `json:"type-version"`
+	EventTypeVersion    string   `json:"eventtypeversion"`
 	EventID             string   `json:"id"`
 	EventTime           string   `json:"time"`
 	SpecVersion         string   `json:"specversion"`

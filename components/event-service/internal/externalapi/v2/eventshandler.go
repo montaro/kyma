@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kyma-project/kyma/components/event-service/internal/events/bus"
+
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
-	bus "github.com/kyma-project/kyma/components/event-service/internal/events/bus"
 	busv2 "github.com/kyma-project/kyma/components/event-service/internal/events/bus/v2"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
