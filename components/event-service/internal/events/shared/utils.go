@@ -50,6 +50,11 @@ func ErrorResponseWrongEventID() (response *api.PublishEventResponses) {
 	return createInvalidFieldError(FieldEventID)
 }
 
+// ErrorResponseWrongSpecVersion returns an error of type PublishEventResponses for wrong SpecVersion field
+func ErrorResponseWrongSpecVersion() (response *api.PublishEventResponses) {
+	return createInvalidFieldError(FieldSpecVersionV3)
+}
+
 // ErrorResponseMissingFieldData returns an error of type PublishEventResponses for missing Data field
 func ErrorResponseMissingFieldData() (response *api.PublishEventResponses) {
 	return createMissingFieldError(FieldData)

@@ -7,23 +7,25 @@ import (
 )
 
 type configurationData struct {
-	sourceID string
+	SourceID string
 }
 
-var conf *configurationData
+//Conf Event-Service configuration data
+var Conf *configurationData
 var eventsTargetURL string
 
 // Init should be used to initialize the "source" related configuration data
 func Init(sourceID string, targetURL string) {
-	conf = &configurationData{
-		sourceID: sourceID,
+	Conf = &configurationData{
+		SourceID: sourceID,
 	}
 
 	eventsTargetURL = targetURL
 }
 
-func checkConf() (err error) {
-	if conf == nil {
+//CheckConf assert the configuration initialization
+func CheckConf() (err error) {
+	if Conf == nil {
 		return fmt.Errorf("configuration data not initialized")
 	}
 	return nil
@@ -31,12 +33,12 @@ func checkConf() (err error) {
 
 // AddSource adds the "source" related data to the incoming request
 func AddSource(parameters *api.PublishEventParameters) (resp *api.SendEventParameters, err error) {
-	if err := checkConf(); err != nil {
+	if err := CheckConf(); err != nil {
 		return nil, err
 	}
 
 	sendRequest := api.SendEventParameters{
-		SourceID:         conf.sourceID, // enrich the event with the sourceID
+		SourceID:         Conf.SourceID, // enrich the event with the sourceID
 		EventType:        parameters.Publishrequest.EventType,
 		EventTypeVersion: parameters.Publishrequest.EventTypeVersion,
 		EventID:          parameters.Publishrequest.EventID,

@@ -24,7 +24,7 @@ func InitEventSender(clientProvider httptools.HTTPClientProvider, requestProvide
 }
 
 // SendEvent sends the incoming request to the Sender
-func SendEvent(req *api.SendEventParameters, traceHeaders *map[string]string,
+func SendEvent(req interface{}, traceHeaders *map[string]string,
 	forwardHeaders *map[string][]string) (*api.SendEventResponse, error) {
 	body := new(bytes.Buffer)
 	json.NewEncoder(body).Encode(req)
