@@ -122,30 +122,30 @@ func checkParameters(parameters *api.PublishEventParametersV3) (response *api.Pu
 		return shared.ErrorResponseBadRequest(shared.ErrorMessageBadPayload)
 	}
 	if len(parameters.EventRequestV3.EventType) == 0 {
-		return shared.ErrorResponseMissingFieldEventType()
+		return ErrorResponseMissingFieldEventType()
 	}
 	if len(parameters.EventRequestV3.EventTypeVersion) == 0 {
-		return shared.ErrorResponseMissingFieldEventTypeVersion()
+		return ErrorResponseMissingFieldEventTypeVersion()
 	}
 	if !isValidEventTypeVersion(parameters.EventRequestV3.EventTypeVersion) {
-		return shared.ErrorResponseWrongEventTypeVersion()
+		return ErrorResponseWrongEventTypeVersion()
 	}
 	if len(parameters.EventRequestV3.EventTime) == 0 {
-		return shared.ErrorResponseMissingFieldEventTime()
+		return ErrorResponseMissingFieldEventTime()
 	}
 	if _, err := time.Parse(time.RFC3339, parameters.EventRequestV3.EventTime); err != nil {
-		return shared.ErrorResponseWrongEventTime(err)
+		return ErrorResponseWrongEventTime()
 	}
 	if len(parameters.EventRequestV3.EventID) > 0 && !isValidEventID(parameters.EventRequestV3.EventID) {
-		return shared.ErrorResponseWrongEventID()
+		return ErrorResponseWrongEventID()
 	}
 	if parameters.EventRequestV3.SpecVersion != specVersion {
-		return shared.ErrorResponseWrongSpecVersion()
+		return ErrorResponseWrongSpecVersion()
 	}
 	if parameters.EventRequestV3.Data == nil {
-		return shared.ErrorResponseMissingFieldData()
+		return ErrorResponseMissingFieldData()
 	} else if d, ok := (parameters.EventRequestV3.Data).(string); ok && d == "" {
-		return shared.ErrorResponseMissingFieldData()
+		return ErrorResponseMissingFieldData()
 	}
 	// OK
 	return &api.PublishEventResponses{Ok: nil, Error: nil}
