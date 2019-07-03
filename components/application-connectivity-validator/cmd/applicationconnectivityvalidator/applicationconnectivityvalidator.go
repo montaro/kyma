@@ -22,7 +22,8 @@ func main() {
 	proxyHandler := validationproxy.NewProxyHandler(
 		options.group,
 		options.tenant,
-		options.eventServicePathPrefix,
+		options.eventServicePathPrefixV1,
+		options.eventServicePathPrefixV2,
 		options.eventServiceHost,
 		options.appRegistryPathPrefix,
 		options.appRegistryHost)
