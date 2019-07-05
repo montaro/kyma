@@ -145,6 +145,7 @@ func BuildPublishV2TestPayloadWithoutSpecversion() string {
 // BuildPublishV2TestPayloadWithoutType returns a complete payload compliant with CE 0.3
 func BuildPublishV2TestPayloadWithoutType() string {
 	builder := new(eventBuilder).
+		build(source, TestSource).
 		build(eventSpecVersion, TestSpecVersion).
 		build(eventIDFormat, TestEventID).
 		build(eventTypeVersionFormat, TestEventTypeVersion).
