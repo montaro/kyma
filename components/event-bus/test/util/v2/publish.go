@@ -67,7 +67,7 @@ func (b *eventBuilder) build(format string, values ...interface{}) *eventBuilder
 // BuildV2PayloadWithoutCEFields returns a payload without any Cloud Event fields
 func BuildV2PayloadWithoutCEFields() string {
 	builder := new(eventBuilder).
-		build("", "")
+		build("%s", "")
 	payload := builder.String()
 	return payload
 }
@@ -145,6 +145,7 @@ func BuildPublishV2TestPayloadWithoutSpecversion() string {
 // BuildPublishV2TestPayloadWithoutType returns a complete payload compliant with CE 0.3
 func BuildPublishV2TestPayloadWithoutType() string {
 	builder := new(eventBuilder).
+		build(source, TestSource).
 		build(eventSpecVersion, TestSpecVersion).
 		build(eventIDFormat, TestEventID).
 		build(eventTypeVersionFormat, TestEventTypeVersion).
