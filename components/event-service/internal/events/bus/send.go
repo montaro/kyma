@@ -3,6 +3,7 @@ package bus
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -52,6 +53,11 @@ func SendEvent(req interface{}, traceHeaders *map[string]string,
 	if err != nil {
 		return nil, err
 	}
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("response: %s", string(b))
 	defer resp.Body.Close()
 
 	response := api.SendEventResponse{}

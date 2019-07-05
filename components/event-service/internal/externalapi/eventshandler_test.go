@@ -33,7 +33,7 @@ func TestEventOk(t *testing.T) {
 		return
 	}
 	s := "{\"event-type\":\"order.created\",\"event-type-version\":\"v1\",\"event-id\":\"31109198-4d69-4ae0-972d-76117f3748c8\",\"event-time\":\"2012-11-01T22:08:41+00:00\"}"
-	req, err := http.NewRequest(http.MethodPost, shared.EventsPath, strings.NewReader(s))
+	req, err := http.NewRequest(http.MethodPost, shared.EventsV1Path, strings.NewReader(s))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func TestEventOk(t *testing.T) {
 func TestRequestTooLarge(t *testing.T) {
 	data := base64.StdEncoding.EncodeToString((make([]byte, maxRequestSize+1)))
 	s := fmt.Sprintf("{\"event-type\":\"order.created\",\"event-type-version\":\"v1\",\"event-id\":\"31109198-4d69-4ae0-972d-76117f3748c8\",\"event-time\":\"2012-11-01T22:08:41+00:00\",\"data\":\"%s\"}", data)
-	req, err := http.NewRequest(http.MethodPost, shared.EventsPath, strings.NewReader(s))
+	req, err := http.NewRequest(http.MethodPost, shared.EventsV1Path, strings.NewReader(s))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func TestPropagateTraceHeaders(t *testing.T) {
 
 	// simulate request from outside of event-service
 	event := "{\"event-type\":\"order.created\",\"event-type-version\":\"v1\",\"event-id\":\"31109198-4d69-4ae0-972d-76117f3748c8\",\"event-time\":\"2012-11-01T22:08:41+00:00\",\"data\":\"{'key':'value'}\"}"
-	req, err := http.NewRequest(http.MethodPost, shared.EventsPath, strings.NewReader(event))
+	req, err := http.NewRequest(http.MethodPost, shared.EventsV1Path, strings.NewReader(event))
 
 	// simulate trace headers added by envoy sidecar
 	traceHeaderKey, traceHeaderVal := "x-b3-traceid", "0887296564d75cda"

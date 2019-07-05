@@ -12,7 +12,7 @@ import (
 const (
 	// TestSource used in the tests
 	TestSource = "test-source"
-	// TestEventType used in the tests
+	// TestEventID used in the tests
 	TestEventID = "4ea567cf-812b-49d9-a4b2-cb5ddf464094"
 	// TestType used in the tests
 	TestType = "test-type"
@@ -130,7 +130,7 @@ func BuildPublishV2TestPayloadWithoutSource() string {
 	return payload
 }
 
-// BuildPublishV2TestPayloadWithoutSpecVersion returns a complete payload compliant with CE 0.3
+// BuildPublishV2TestPayloadWithoutSpecversion returns payload without a Specversion
 func BuildPublishV2TestPayloadWithoutSpecversion() string {
 	builder := new(eventBuilder).
 		build(eventIDFormat, TestEventID).
