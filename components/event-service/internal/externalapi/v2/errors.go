@@ -5,6 +5,11 @@ import (
 	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
 )
 
+// ErrorResponseMissingFieldEventID returns an error of type PublishEventResponses for missing EventID field
+func ErrorResponseMissingFieldEventID() (response *api.PublishEventResponses) {
+	return shared.CreateMissingFieldError(shared.FieldEventIDV3)
+}
+
 // ErrorResponseMissingFieldEventType returns an error of type PublishEventResponses for missing EventType field
 func ErrorResponseMissingFieldEventType() (response *api.PublishEventResponses) {
 	return shared.CreateMissingFieldError(shared.FieldEventTypeV3)

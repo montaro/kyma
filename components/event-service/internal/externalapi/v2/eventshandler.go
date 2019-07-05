@@ -122,6 +122,9 @@ func checkParameters(parameters *api.PublishEventParametersV3) (response *api.Pu
 	if parameters == nil {
 		return shared.ErrorResponseBadRequest(shared.ErrorMessageBadPayload)
 	}
+	if len(parameters.EventRequestV3.EventID) == 0 {
+		return ErrorResponseMissingFieldEventID()
+	}
 	if len(parameters.EventRequestV3.EventType) == 0 {
 		return ErrorResponseMissingFieldEventType()
 	}
