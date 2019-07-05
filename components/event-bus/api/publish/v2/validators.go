@@ -18,6 +18,9 @@ var (
 
 //ValidatePublish validates a publish POST request
 func ValidatePublish(r *EventRequestV3, opts *api.EventOptions) *api.Error {
+	if len(r.ID) == 0 {
+		return ErrorResponseMissingFieldEventID()
+	}
 	if len(r.Source) == 0 {
 		return ErrorResponseMissingFieldSourceID()
 	}

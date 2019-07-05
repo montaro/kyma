@@ -42,6 +42,11 @@ func ErrorResponseMissingFieldSourceID() (response *api.Error) {
 }
 
 // ErrorResponseMissingFieldEventType returns an API error instance for the missing field event type error.
+func ErrorResponseMissingFieldEventID() (response *api.Error) {
+	return api.CreateMissingFieldError(FieldEventID)
+}
+
+// ErrorResponseMissingFieldEventType returns an API error instance for the missing field event type error.
 func ErrorResponseMissingFieldEventType() (response *api.Error) {
 	return api.CreateMissingFieldError(FieldEventType)
 }

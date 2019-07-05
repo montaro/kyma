@@ -290,32 +290,12 @@ func handleKnativePublishRequestV2(w http.ResponseWriter, r *http.Request, knati
 		return nil, nil, nil, err, publisher.FAILED
 	}
 
-	//set source-id from the headers if missing in the payload
-	//if hasSourceID := setCESource(event, &r.Header); !hasSourceID {
-	//	err = api.ErrorResponseMissingFieldSourceID()
-	//	log.Printf("source-id missing: %v", err)
-	//	_ = SendJSONError(w, err)
-	//	return nil, nil, nil, err, publisher.FAILED
-	//}
-
 	// validate the publish request
 	if err = publishv2.ValidatePublish(event, opts.EventOptions); err != nil {
 		log.Printf("validate publish failed: %v", err)
 		_ = sendJSONError(w, err)
 		return nil, nil, nil, err, publisher.FAILED
 	}
-
-	// generate event-id if there is none
-	//if len(event.ID) == 0 {
-	//	eventID, errEventID := generateEventID()
-	//	if errEventID != nil {
-	//		err = api.ErrorResponseInternalServer()
-	//		log.Printf("EventID generation failed: %v", err)
-	//		_ = handlers.SendJSONError(w, err)
-	//		return nil, nil, nil, err, publisher.FAILED
-	//	}
-	//	event.ID = eventID
-	//}
 
 	headers := filterCEHeaders(r)
 
