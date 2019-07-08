@@ -1,4 +1,4 @@
-package externalapi
+package v1
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/bus"
+	busV1 "github.com/kyma-project/kyma/components/event-service/internal/events/bus/v1"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
 	log "github.com/sirupsen/logrus"
@@ -83,7 +84,7 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 			writeJSONResponse(w, resp)
 			return
 		}
-		log.Println("Cannot process event")
+		log.Errorf("cannot process event: %v", err)
 		http.Error(w, "Cannot process event", http.StatusInternalServerError)
 		return
 	}
@@ -100,7 +101,7 @@ var handleEvent = func(publishRequest *api.PublishEventParameters, publishRespon
 		return
 	}
 	// add source to the incoming request
-	sendRequest, err := bus.AddSource(publishRequest)
+	sendRequest, err := busV1.AddSource(publishRequest)
 	if err != nil {
 		return err
 	}

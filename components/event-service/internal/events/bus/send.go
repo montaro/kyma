@@ -3,10 +3,11 @@ package bus
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	v2 "github.com/kyma-project/kyma/components/event-service/internal/events/bus/v2"
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
@@ -34,7 +35,8 @@ func SendEvent(req interface{}, traceHeaders *map[string]string,
 		return nil, err
 	}
 
-	reqURL, err := url.ParseRequestURI(eventsTargetURL)
+	reqURL, err := url.ParseRequestURI(v2.EventsTargetURL)
+
 	if err != nil {
 		return nil, err
 	}
@@ -53,11 +55,7 @@ func SendEvent(req interface{}, traceHeaders *map[string]string,
 	if err != nil {
 		return nil, err
 	}
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Printf("response: %s", string(b))
+
 	defer resp.Body.Close()
 
 	response := api.SendEventResponse{}
@@ -67,7 +65,6 @@ func SendEvent(req interface{}, traceHeaders *map[string]string,
 		if err != nil {
 			return nil, err
 		}
-
 		result := &api.PublishResponse{}
 
 		err = json.Unmarshal(body, result)

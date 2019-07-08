@@ -1,4 +1,4 @@
-package bus
+package v1
 
 import (
 	"fmt"
@@ -12,7 +12,9 @@ type configurationData struct {
 
 //Conf Event-Service configuration data
 var Conf *configurationData
-var eventsTargetURL string
+
+//EventsTargetURL Event-Service contains target URL
+var EventsTargetURL string
 
 // Init should be used to initialize the "source" related configuration data
 func Init(sourceID string, targetURL string) {
@@ -20,7 +22,7 @@ func Init(sourceID string, targetURL string) {
 		SourceID: sourceID,
 	}
 
-	eventsTargetURL = targetURL
+	EventsTargetURL = targetURL
 }
 
 //CheckConf assert the configuration initialization
