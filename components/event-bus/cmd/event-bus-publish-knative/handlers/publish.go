@@ -232,7 +232,7 @@ func buildMessage(publishRequest *api.Request, traceContext *api.TraceContext,
 
 	return message
 }
-func buildCEMessage(event *publishv2.EventRequestV3, traceContext *api.TraceContext,
+func buildCEMessage(event *publishv2.EventRequestV2, traceContext *api.TraceContext,
 	headers map[string][]string) *Message {
 
 	headers[trace.HeaderSourceID] = []string{event.Source}

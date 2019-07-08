@@ -19,7 +19,7 @@ const (
 func ValidateRequestV1(r *http.Request) (*api.Request, *api.Error) {
 	// validate the http method
 	if r.Method != http.MethodPost {
-		log.Printf("request method not supported: %v", r.Method)
+		log.Fatalf("request method not supported: %v", r.Method)
 		return nil, api.ErrorResponseBadRequest()
 	}
 
@@ -53,7 +53,7 @@ func ValidateRequestV1(r *http.Request) (*api.Request, *api.Error) {
 }
 
 // ValidateRequestV2 validates the http.Request and returns an api.Request instance and an api.Error.
-func ValidateRequestV2(r *http.Request) (*v2.EventRequestV3, *api.Error) {
+func ValidateRequestV2(r *http.Request) (*v2.EventRequestV2, *api.Error) {
 	// validate the http method
 	if r.Method != http.MethodPost {
 		log.Printf("request method not supported: %v", r.Method)
@@ -80,7 +80,7 @@ func ValidateRequestV2(r *http.Request) (*v2.EventRequestV3, *api.Error) {
 	}
 
 	// validate parse the request body
-	publishRequest := &v2.EventRequestV3{}
+	publishRequest := &v2.EventRequestV2{}
 	err = json.Unmarshal(body, publishRequest)
 	if err != nil {
 		return nil, api.ErrorResponseBadPayload()

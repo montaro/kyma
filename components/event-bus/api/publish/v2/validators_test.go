@@ -196,8 +196,8 @@ func testRegex(t *testing.T, match func(s string) bool, target string, expected 
 	assert.Equal(t, expected, match(target))
 }
 
-func buildTestPublishRequest() EventRequestV3 {
-	event := EventRequestV3{
+func buildTestPublishRequest() EventRequestV2 {
+	event := EventRequestV2{
 		ID:          "4ea567cf-812b-49d9-a4b2-cb5ddf464094",
 		Source:      "ec-default",
 		SpecVersion: "0.3",

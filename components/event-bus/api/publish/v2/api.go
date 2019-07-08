@@ -32,8 +32,8 @@ type Extensions = map[string]interface{}
 // AnyValue implements the service definition of AnyValue
 type AnyValue interface{}
 
-// EventRequestV3 represents a publish event CE v.3.0 request
-type EventRequestV3 struct {
+// EventRequestV2 represents a publish event CE v.3.0 request
+type EventRequestV2 struct {
 	ID                  string   `json:"id"`
 	Source              string   `json:"source"`
 	SpecVersion         string   `json:"specversion"`
@@ -46,6 +46,6 @@ type EventRequestV3 struct {
 
 // CloudEventV3 represents the event to be persisted to NATS
 type CloudEventV3 struct {
-	EventRequestV3
+	EventRequestV2
 	Extensions Extensions `json:"extensions,omitempty"`
 }

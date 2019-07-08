@@ -2,7 +2,7 @@ package api
 
 import "github.com/kyma-project/kyma/components/event-service/internal/events/api"
 
-// EventRequestV2 implements the service definition of EventRequestV3
+// EventRequestV2 implements the service definition of EventRequestV2
 type EventRequestV2 struct {
 	EventType           string       `json:"type"`
 	EventTypeVersion    string       `json:"eventtypeversion"`
