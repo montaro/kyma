@@ -84,7 +84,8 @@ func TestPropagateTraceHeaders(t *testing.T) {
 
 	// mock the http request provider
 	httpRequestProviderMock := func(method, url string, body io.Reader) (*http.Request, error) {
-		downstreamReq, err := http.NewRequest(method, url, body)
+		var err error
+		downstreamReq, err = http.NewRequest(method, url, body)
 		if err != nil {
 			t.Logf("Error: %v", err)
 			return nil, err

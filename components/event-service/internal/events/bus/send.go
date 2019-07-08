@@ -36,8 +36,6 @@ func SendEvent(req interface{}, traceHeaders *map[string]string,
 		return nil, err
 	}
 
-	fmt.Printf("DownstreamReq: %")
-
 	reqURL, err := url.ParseRequestURI(v2.EventsTargetURL)
 
 	if err != nil {
