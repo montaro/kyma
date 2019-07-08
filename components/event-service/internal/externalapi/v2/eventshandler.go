@@ -109,7 +109,7 @@ var handleEvent = func(publishRequest *api.PublishEventParametersV3, publishResp
 		return err
 	}
 	// send the event
-	sendEventResponse, err := bus.SendEvent(sendRequest, traceHeaders, forwardHeaders)
+	sendEventResponse, err := bus.SendEvent("v2", sendRequest, traceHeaders, forwardHeaders)
 	if err != nil {
 		return err
 	}

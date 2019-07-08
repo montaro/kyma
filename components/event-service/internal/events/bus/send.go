@@ -6,9 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-
-	v2 "github.com/kyma-project/kyma/components/event-service/internal/events/bus/v2"
-
+	
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
 	"github.com/kyma-project/kyma/components/event-service/internal/httptools"
@@ -26,7 +24,7 @@ func InitEventSender(clientProvider httptools.HTTPClientProvider, requestProvide
 }
 
 // SendEvent sends the incoming request to the Sender
-func SendEvent(req interface{}, traceHeaders *map[string]string,
+func SendEvent(apiVersion string, req interface{}, traceHeaders *map[string]string,
 	forwardHeaders *map[string][]string) (*api.SendEventResponse, error) {
 	body := new(bytes.Buffer)
 	json.NewEncoder(body).Encode(req)
@@ -35,7 +33,14 @@ func SendEvent(req interface{}, traceHeaders *map[string]string,
 		return nil, err
 	}
 
-	reqURL, err := url.ParseRequestURI(v2.EventsTargetURL)
+	var reqURL *url.URL
+
+	switch apiVersion {
+	case "v1":
+		reqURL, err = url.ParseRequestURI(eventsTargetURLV1)
+	case "v2":
+		reqURL, err = url.ParseRequestURI(eventsTargetURLV2)
+	}
 
 	if err != nil {
 		return nil, err
