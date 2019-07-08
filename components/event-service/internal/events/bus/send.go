@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	
+
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
 	"github.com/kyma-project/kyma/components/event-service/internal/httptools"

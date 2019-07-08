@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kyma-project/kyma/components/event-service/internal/externalapi/v2"
+	v2 "github.com/kyma-project/kyma/components/event-service/internal/externalapi/v2"
 )
 
 func TestErrorHandler_ServeHTTP(t *testing.T) {

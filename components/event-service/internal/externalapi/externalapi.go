@@ -1,8 +1,9 @@
 package externalapi
 
 import (
-	v1 "github.com/kyma-project/kyma/components/event-service/internal/externalapi/v1"
 	"net/http"
+
+	v1 "github.com/kyma-project/kyma/components/event-service/internal/externalapi/v1"
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/subscribed"
 	v2 "github.com/kyma-project/kyma/components/event-service/internal/externalapi/v2"

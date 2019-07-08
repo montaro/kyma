@@ -3,14 +3,19 @@ package externalapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
-	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
-	"github.com/kyma-project/kyma/components/event-service/internal/externalapi/v1"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
+	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
+	v1 "github.com/kyma-project/kyma/components/event-service/internal/externalapi/v1"
+)
+
+const (
+	maxRequestSize = 64 * 1024
 )
 
 func TestErrorNoContent(t *testing.T) {
