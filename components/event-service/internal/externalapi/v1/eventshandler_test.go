@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
+	apiv1 "github.com/kyma-project/kyma/components/event-service/internal/events/api/v1"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/bus"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
@@ -26,7 +27,7 @@ func TestEventOk(t *testing.T) {
 	saved := handleEvent
 	defer func() { handleEvent = saved }()
 
-	handleEvent = func(parameters *api.PublishEventParametersV1, response *api.PublishEventResponses,
+	handleEvent = func(parameters *apiv1.PublishEventParametersV1, response *api.PublishEventResponses,
 		traceHeaders *map[string]string, forwardHeaders *map[string][]string) (err error) {
 		ok := api.PublishResponse{EventID: "responseEventId"}
 		response.Ok = &ok

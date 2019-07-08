@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
+	apiv1 "github.com/kyma-project/kyma/components/event-service/internal/events/api/v1"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/bus"
 	busV1 "github.com/kyma-project/kyma/components/event-service/internal/events/bus/v1"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
@@ -59,7 +60,7 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	var err error
-	parameters := &api.PublishEventParametersV1{}
+	parameters := &apiv1.PublishEventParametersV1{}
 	decoder := json.NewDecoder(req.Body)
 	err = decoder.Decode(&parameters.PublishrequestV1)
 	if err != nil {
@@ -93,7 +94,7 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
-var handleEvent = func(publishRequest *api.PublishEventParametersV1, publishResponse *api.PublishEventResponses,
+var handleEvent = func(publishRequest *apiv1.PublishEventParametersV1, publishResponse *api.PublishEventResponses,
 	traceHeaders *map[string]string, forwardHeaders *map[string][]string) (err error) {
 	checkResp := checkParameters(publishRequest)
 	if checkResp.Error != nil {
@@ -115,7 +116,7 @@ var handleEvent = func(publishRequest *api.PublishEventParametersV1, publishResp
 	return err
 }
 
-func checkParameters(parameters *api.PublishEventParametersV1) (response *api.PublishEventResponses) {
+func checkParameters(parameters *apiv1.PublishEventParametersV1) (response *api.PublishEventResponses) {
 	if parameters == nil {
 		return shared.ErrorResponseBadRequest(shared.ErrorMessageBadPayload)
 	}

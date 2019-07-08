@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
+	"github.com/kyma-project/kyma/components/event-service/internal/events/api/v1"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/bus"
 )
 
