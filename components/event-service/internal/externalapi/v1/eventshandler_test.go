@@ -12,8 +12,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
-	bus "github.com/kyma-project/kyma/components/event-service/internal/events/bus"
-	busV1 "github.com/kyma-project/kyma/components/event-service/internal/events/bus/v1"
+	"github.com/kyma-project/kyma/components/event-service/internal/events/bus"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
 	"github.com/kyma-project/kyma/components/event-service/internal/httptools"

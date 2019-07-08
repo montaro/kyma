@@ -1,6 +1,7 @@
 package externalapi
 
 import (
+	v1 "github.com/kyma-project/kyma/components/event-service/internal/externalapi/v1"
 	"net/http"
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/subscribed"
@@ -18,7 +19,7 @@ type SubscribedEventsHandler interface {
 func NewHandler(maxRequestSize int64, eventsClient subscribed.EventsClient) http.Handler {
 	router := mux.NewRouter()
 
-	router.Path("/{application}/v1/events").Handler(NewEventsHandler(maxRequestSize)).Methods(http.MethodPost)
+	router.Path("/{application}/v1/events").Handler(v1.NewEventsHandler(maxRequestSize)).Methods(http.MethodPost)
 
 	router.Path("/{application}/v2/events").Handler(v2.NewEventsHandler(maxRequestSize)).Methods(http.MethodPost)
 

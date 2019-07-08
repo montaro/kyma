@@ -3,14 +3,14 @@ package externalapi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
+	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
+	"github.com/kyma-project/kyma/components/event-service/internal/externalapi/v1"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
-	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
 )
 
 func TestErrorNoContent(t *testing.T) {
@@ -19,7 +19,7 @@ func TestErrorNoContent(t *testing.T) {
 		t.Fatal(err)
 	}
 	recorder := httptest.NewRecorder()
-	handler := NewEventsHandler(maxRequestSize)
+	handler := v1.NewEventsHandler(maxRequestSize)
 	handler.ServeHTTP(recorder, req)
 	if status := recorder.Code; status != http.StatusBadRequest {
 		t.Errorf("Wrong status code: got %v want %v", status, http.StatusBadRequest)
@@ -110,7 +110,7 @@ func sendAndReceiveError(t *testing.T, s *string) (result *api.Error, err error)
 		t.Fatal(err)
 	}
 	recorder := httptest.NewRecorder()
-	handler := NewEventsHandler(maxRequestSize)
+	handler := v1.NewEventsHandler(maxRequestSize)
 	handler.ServeHTTP(recorder, req)
 	if status := recorder.Code; status != http.StatusBadRequest {
 		t.Errorf("Wrong status code: got %v want %v", status, http.StatusBadRequest)
