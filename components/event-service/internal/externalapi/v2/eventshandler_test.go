@@ -12,7 +12,8 @@ import (
 	"testing"
 
 	"github.com/kyma-project/kyma/components/event-service/internal/events/api"
-	"github.com/kyma-project/kyma/components/event-service/internal/events/bus"
+	bus "github.com/kyma-project/kyma/components/event-service/internal/events/bus"
+	busV2 "github.com/kyma-project/kyma/components/event-service/internal/events/bus/v2"
 	"github.com/kyma-project/kyma/components/event-service/internal/events/shared"
 	"github.com/kyma-project/kyma/components/event-service/internal/httpconsts"
 	"github.com/kyma-project/kyma/components/event-service/internal/httptools"
@@ -72,7 +73,7 @@ type HTTPClientMock struct{}
 func (c *HTTPClientMock) Do(req *http.Request) (*http.Response, error) {
 	response := &http.Response{
 		StatusCode: 200,
-		Body:       ioutil.NopCloser(bytes.NewReader([]byte("{\"id\":\"cea54510-8631-47f0-934a-0571495c12d0\"}"))),
+		Body:       ioutil.NopCloser(bytes.NewReader([]byte("{\"event-id\":\"cea54510-8631-47f0-934a-0571495c12d0\",\"reason\":\"Message successfully published to the channel\",\"status\":\"published\"}"))),
 	}
 	return response, nil
 }
@@ -101,8 +102,9 @@ func TestPropagateTraceHeaders(t *testing.T) {
 	defer func() { bus.InitEventSender(httptools.DefaultHTTPClientProvider, httptools.DefaultHTTPRequestProvider) }()
 
 	// init source config
+
 	sourceID, targetURL := "", "http://kyma-domain/v2/events"
-	bus.Init(sourceID, targetURL)
+	busV2.Init(sourceID, targetURL)
 
 	// simulate request from outside of event-service
 	event := "{\"type\":\"order.created\",\"specversion\":\"0.3\",\"eventtypeversion\":\"v1\",\"id\":\"31109198-4d69-4ae0-972d-76117f3748c8\",\"time\":\"2012-11-01T22:08:41+00:00\",\"data\":\"{'key':'value'}\"}"
@@ -128,7 +130,6 @@ func TestPropagateTraceHeaders(t *testing.T) {
 	handler := NewEventsHandler(maxRequestSize)
 	handler.ServeHTTP(recorder, req)
 	if downstreamReq == nil {
-
 		t.Logf("downstream is nil: %v", downstreamReq)
 	} else {
 		t.Logf("come on!!!: %v", downstreamReq)
