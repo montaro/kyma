@@ -43,7 +43,8 @@ func NewEventsHandler(maxRequestSize int64) http.Handler {
 	return &maxBytesHandler{next: http.HandlerFunc(handleEvents), limit: maxRequestSize}
 }
 
-func filterCEHeaders(req *http.Request) map[string][]string {
+// FilterCEHeaders filters Cloud Events Headers
+func FilterCEHeaders(req *http.Request) map[string][]string {
 	//forward `ce-` headers only
 	headers := make(map[string][]string)
 	for k := range req.Header {
@@ -79,7 +80,7 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 
 	traceHeaders := getTraceHeaders(req)
 
-	forwardHeaders := filterCEHeaders(req)
+	forwardHeaders := FilterCEHeaders(req)
 
 	err = handleEvent(parameters, resp, traceHeaders, &forwardHeaders)
 	if err == nil {
