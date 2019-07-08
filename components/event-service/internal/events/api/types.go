@@ -1,9 +1,7 @@
-// GENERATED FILE: DO NOT EDIT!
-
 package api
 
-// PublishRequest implements the service definition of PublishRequest
-type PublishRequest struct {
+// PublishRequestV1 implements the service definition of PublishRequest
+type PublishRequestV1 struct {
 	EventType        string   `json:"event-type,omitempty"`
 	EventTypeVersion string   `json:"event-type-version,omitempty"`
 	EventID          string   `json:"event-id,omitempty"`
@@ -11,8 +9,8 @@ type PublishRequest struct {
 	Data             AnyValue `json:"data,omitempty"`
 }
 
-// EventRequestV3 implements the service definition of EventRequestV3
-type EventRequestV3 struct {
+// EventRequestV2 implements the service definition of EventRequestV3
+type EventRequestV2 struct {
 	EventType           string   `json:"type"`
 	EventTypeVersion    string   `json:"eventtypeversion"`
 	EventID             string   `json:"id"`
@@ -50,14 +48,14 @@ type ErrorDetail struct {
 	MoreInfo string `json:"moreInfo,omitempty"`
 }
 
-// PublishEventParameters holds parameters to PublishEvent
-type PublishEventParameters struct {
-	Publishrequest PublishRequest `json:"publishrequest,omitempty"`
+// PublishEventParametersV1 holds parameters to PublishEvent
+type PublishEventParametersV1 struct {
+	PublishrequestV1 PublishRequestV1 `json:"publishrequest,omitempty"`
 }
 
-// PublishEventParametersV3 holds parameters to PublishEvent
-type PublishEventParametersV3 struct {
-	EventRequestV3 EventRequestV3 `json:"publishrequest,omitempty"`
+// PublishEventParametersV2 holds parameters to PublishEvent
+type PublishEventParametersV2 struct {
+	EventRequestV2 EventRequestV2 `json:"publishrequest,omitempty"`
 }
 
 // PublishEventResponses holds responses of PublishEvent
@@ -66,8 +64,8 @@ type PublishEventResponses struct {
 	Error *Error
 }
 
-// SendEventParameters implements the request to the outbound messaging API
-type SendEventParameters struct {
+// SendEventParametersV1 implements the request to the outbound messaging API
+type SendEventParametersV1 struct {
 	SourceID         string   `json:"source-id,omitempty"`
 	EventType        string   `json:"event-type,omitempty"`
 	EventTypeVersion string   `json:"event-type-version,omitempty"`
@@ -76,13 +74,13 @@ type SendEventParameters struct {
 	Data             AnyValue `json:"data,omitempty"`
 }
 
-// SendEventParametersV3 implements the request to the outbound messaging API
-type SendEventParametersV3 struct {
-	SourceID            string   `json:"source"`
-	EventType           string   `json:"type"`
+// SendEventParametersV2 implements the request to the outbound messaging API
+type SendEventParametersV2 struct {
+	Source              string   `json:"source"`
+	Type                string   `json:"type"`
 	EventTypeVersion    string   `json:"eventtypeversion"`
-	EventID             string   `json:"id"`
-	EventTime           string   `json:"time"`
+	ID                  string   `json:"id"`
+	Time                string   `json:"time"`
 	SpecVersion         string   `json:"specversion"`
 	DataContentEncoding string   `json:"datacontentencoding"`
 	Data                AnyValue `json:"data"`

@@ -63,9 +63,9 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	var err error
-	parameters := &api.PublishEventParametersV3{}
+	parameters := &api.PublishEventParametersV2{}
 	decoder := json.NewDecoder(req.Body)
-	err = decoder.Decode(&parameters.EventRequestV3)
+	err = decoder.Decode(&parameters.EventRequestV2)
 	if err != nil {
 		var resp *api.PublishEventResponses
 		if err.Error() == requestBodyTooLargeErrorMessage {
@@ -97,7 +97,7 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
-var handleEvent = func(publishRequest *api.PublishEventParametersV3, publishResponse *api.PublishEventResponses,
+var handleEvent = func(publishRequest *api.PublishEventParametersV2, publishResponse *api.PublishEventResponses,
 	traceHeaders *map[string]string, forwardHeaders *map[string][]string) (err error) {
 	checkResp := checkParameters(publishRequest)
 	if checkResp.Error != nil {
@@ -119,37 +119,37 @@ var handleEvent = func(publishRequest *api.PublishEventParametersV3, publishResp
 	return err
 }
 
-func checkParameters(parameters *api.PublishEventParametersV3) (response *api.PublishEventResponses) {
+func checkParameters(parameters *api.PublishEventParametersV2) (response *api.PublishEventResponses) {
 	if parameters == nil {
 		return shared.ErrorResponseBadRequest(shared.ErrorMessageBadPayload)
 	}
-	if len(parameters.EventRequestV3.EventID) == 0 {
+	if len(parameters.EventRequestV2.EventID) == 0 {
 		return ErrorResponseMissingFieldEventID()
 	}
-	if len(parameters.EventRequestV3.EventType) == 0 {
+	if len(parameters.EventRequestV2.EventType) == 0 {
 		return ErrorResponseMissingFieldEventType()
 	}
-	if len(parameters.EventRequestV3.EventTypeVersion) == 0 {
+	if len(parameters.EventRequestV2.EventTypeVersion) == 0 {
 		return ErrorResponseMissingFieldEventTypeVersion()
 	}
-	if !isValidEventTypeVersion(parameters.EventRequestV3.EventTypeVersion) {
+	if !isValidEventTypeVersion(parameters.EventRequestV2.EventTypeVersion) {
 		return ErrorResponseWrongEventTypeVersion()
 	}
-	if len(parameters.EventRequestV3.EventTime) == 0 {
+	if len(parameters.EventRequestV2.EventTime) == 0 {
 		return ErrorResponseMissingFieldEventTime()
 	}
-	if _, err := time.Parse(time.RFC3339, parameters.EventRequestV3.EventTime); err != nil {
+	if _, err := time.Parse(time.RFC3339, parameters.EventRequestV2.EventTime); err != nil {
 		return ErrorResponseWrongEventTime()
 	}
-	if len(parameters.EventRequestV3.EventID) > 0 && !isValidEventID(parameters.EventRequestV3.EventID) {
+	if len(parameters.EventRequestV2.EventID) > 0 && !isValidEventID(parameters.EventRequestV2.EventID) {
 		return ErrorResponseWrongEventID()
 	}
-	if parameters.EventRequestV3.SpecVersion != specVersion {
+	if parameters.EventRequestV2.SpecVersion != specVersion {
 		return ErrorResponseWrongSpecVersion()
 	}
-	if parameters.EventRequestV3.Data == nil {
+	if parameters.EventRequestV2.Data == nil {
 		return ErrorResponseMissingFieldData()
-	} else if d, ok := (parameters.EventRequestV3.Data).(string); ok && d == "" {
+	} else if d, ok := (parameters.EventRequestV2.Data).(string); ok && d == "" {
 		return ErrorResponseMissingFieldData()
 	}
 	// OK

@@ -6,18 +6,18 @@ import (
 )
 
 // AddSource adds the "source" related data to the incoming request
-func AddSource(parameters *api.PublishEventParameters) (resp *api.SendEventParameters, err error) {
+func AddSource(parameters *api.PublishEventParametersV1) (resp *api.SendEventParametersV1, err error) {
 	if err := bus.CheckConf(); err != nil {
 		return nil, err
 	}
 
-	sendRequest := api.SendEventParameters{
+	sendRequest := api.SendEventParametersV1{
 		SourceID:         bus.Conf.SourceID, // enrich the event with the sourceID
-		EventType:        parameters.Publishrequest.EventType,
-		EventTypeVersion: parameters.Publishrequest.EventTypeVersion,
-		EventID:          parameters.Publishrequest.EventID,
-		EventTime:        parameters.Publishrequest.EventTime,
-		Data:             parameters.Publishrequest.Data,
+		EventType:        parameters.PublishrequestV1.EventType,
+		EventTypeVersion: parameters.PublishrequestV1.EventTypeVersion,
+		EventID:          parameters.PublishrequestV1.EventID,
+		EventTime:        parameters.PublishrequestV1.EventTime,
+		Data:             parameters.PublishrequestV1.Data,
 	}
 
 	return &sendRequest, nil

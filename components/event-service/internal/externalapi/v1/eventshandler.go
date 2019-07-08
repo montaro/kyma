@@ -59,9 +59,9 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	var err error
-	parameters := &api.PublishEventParameters{}
+	parameters := &api.PublishEventParametersV1{}
 	decoder := json.NewDecoder(req.Body)
-	err = decoder.Decode(&parameters.Publishrequest)
+	err = decoder.Decode(&parameters.PublishrequestV1)
 	if err != nil {
 		var resp *api.PublishEventResponses
 		if err.Error() == requestBodyTooLargeErrorMessage {
@@ -93,7 +93,7 @@ func handleEvents(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
-var handleEvent = func(publishRequest *api.PublishEventParameters, publishResponse *api.PublishEventResponses,
+var handleEvent = func(publishRequest *api.PublishEventParametersV1, publishResponse *api.PublishEventResponses,
 	traceHeaders *map[string]string, forwardHeaders *map[string][]string) (err error) {
 	checkResp := checkParameters(publishRequest)
 	if checkResp.Error != nil {
@@ -115,31 +115,31 @@ var handleEvent = func(publishRequest *api.PublishEventParameters, publishRespon
 	return err
 }
 
-func checkParameters(parameters *api.PublishEventParameters) (response *api.PublishEventResponses) {
+func checkParameters(parameters *api.PublishEventParametersV1) (response *api.PublishEventResponses) {
 	if parameters == nil {
 		return shared.ErrorResponseBadRequest(shared.ErrorMessageBadPayload)
 	}
-	if len(parameters.Publishrequest.EventType) == 0 {
+	if len(parameters.PublishrequestV1.EventType) == 0 {
 		return shared.ErrorResponseMissingFieldEventType()
 	}
-	if len(parameters.Publishrequest.EventTypeVersion) == 0 {
+	if len(parameters.PublishrequestV1.EventTypeVersion) == 0 {
 		return shared.ErrorResponseMissingFieldEventTypeVersion()
 	}
-	if !isValidEventTypeVersion(parameters.Publishrequest.EventTypeVersion) {
+	if !isValidEventTypeVersion(parameters.PublishrequestV1.EventTypeVersion) {
 		return shared.ErrorResponseWrongEventTypeVersion()
 	}
-	if len(parameters.Publishrequest.EventTime) == 0 {
+	if len(parameters.PublishrequestV1.EventTime) == 0 {
 		return shared.ErrorResponseMissingFieldEventTime()
 	}
-	if _, err := time.Parse(time.RFC3339, parameters.Publishrequest.EventTime); err != nil {
+	if _, err := time.Parse(time.RFC3339, parameters.PublishrequestV1.EventTime); err != nil {
 		return shared.ErrorResponseWrongEventTime(err)
 	}
-	if len(parameters.Publishrequest.EventID) > 0 && !isValidEventID(parameters.Publishrequest.EventID) {
+	if len(parameters.PublishrequestV1.EventID) > 0 && !isValidEventID(parameters.PublishrequestV1.EventID) {
 		return shared.ErrorResponseWrongEventID()
 	}
-	if parameters.Publishrequest.Data == nil {
+	if parameters.PublishrequestV1.Data == nil {
 		return shared.ErrorResponseMissingFieldData()
-	} else if d, ok := (parameters.Publishrequest.Data).(string); ok && d == "" {
+	} else if d, ok := (parameters.PublishrequestV1.Data).(string); ok && d == "" {
 		return shared.ErrorResponseMissingFieldData()
 	}
 	// OK
