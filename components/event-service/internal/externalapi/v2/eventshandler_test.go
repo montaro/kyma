@@ -130,11 +130,6 @@ func TestPropagateTraceHeaders(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	handler := NewEventsHandler(maxRequestSize)
 	handler.ServeHTTP(recorder, req)
-	if downstreamReq == nil {
-		t.Logf("downstream is nil: %v", downstreamReq)
-	} else {
-		t.Logf("come on!!!: %v", downstreamReq)
-	}
 	// trace headers should be added to downstream request headers
 	if downstreamReq.Header.Get(traceHeaderKey) != traceHeaderVal {
 		t.Fatal("http request to events service is missing trace headers")

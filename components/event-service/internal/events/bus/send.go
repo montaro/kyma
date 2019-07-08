@@ -3,7 +3,6 @@ package bus
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -66,7 +65,6 @@ func SendEvent(req interface{}, traceHeaders *map[string]string,
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("what: " + string(body))
 		result := &api.PublishResponse{}
 
 		err = json.Unmarshal(body, result)
