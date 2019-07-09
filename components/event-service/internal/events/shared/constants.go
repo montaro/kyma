@@ -36,11 +36,11 @@ const (
 	FieldEventType        = "event-type"
 	FieldEventTypeVersion = "event-type-version"
 
-	FieldEventIDV3          = "id"
-	FieldEventTimeV3        = "time"
-	FieldEventTypeV3        = "type"
-	FieldEventTypeVersionV3 = "eventtypeversion"
-	FieldSpecVersionV3      = "specversion"
+	FieldEventIDV2          = "id"
+	FieldEventTimeV2        = "time"
+	FieldEventTypeV2        = "type"
+	FieldEventTypeVersionV2 = "eventtypeversion"
+	FieldSpecVersionV2      = "specversion"
 
 	FieldData = "data"
 )
