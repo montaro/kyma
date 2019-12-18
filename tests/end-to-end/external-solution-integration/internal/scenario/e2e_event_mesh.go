@@ -30,7 +30,7 @@ import (
 )
 
 // E2E executes complete external solution integration test scenario
-type E2E struct {
+type E2EEventMesh struct {
 	domain            string
 	testID            string
 	skipSSLVerify     bool
@@ -38,12 +38,9 @@ type E2E struct {
 	applicationGroup  string
 }
 
-const (
-	lambdaPort = 8080
-)
 
 // AddFlags adds CLI flags to given FlagSet
-func (s *E2E) AddFlags(set *pflag.FlagSet) {
+func (s *E2EEventMesh) AddFlags(set *pflag.FlagSet) {
 	pflag.StringVar(&s.domain, "domain", "kyma.local", "domain")
 	pflag.StringVar(&s.testID, "testID", "e2e-mesh", "domain")
 	pflag.BoolVar(&s.skipSSLVerify, "skipSSLVerify", false, "Skip verification of service SSL certificates")
@@ -52,7 +49,7 @@ func (s *E2E) AddFlags(set *pflag.FlagSet) {
 }
 
 // Steps return scenario steps
-func (s *E2E) Steps(config *rest.Config) ([]step.Step, error) {
+func (s *E2EEventMesh) Steps(config *rest.Config) ([]step.Step, error) {
 	appOperatorClientset := appOperatorClient.NewForConfigOrDie(config)
 	appBrokerClientset := appBrokerClient.NewForConfigOrDie(config)
 	kubelessClientset := kubelessClient.NewForConfigOrDie(config)
@@ -105,12 +102,12 @@ func (s *E2E) Steps(config *rest.Config) ([]step.Step, error) {
 		testsuite.NewCreateServiceBinding(s.testID, serviceCatalogClientset.ServicecatalogV1beta1().ServiceBindings(s.testID), state),
 		testsuite.NewCreateServiceBindingUsage(s.testID, s.testID, s.testID, serviceBindingUsageClientset.ServicecatalogV1alpha1().ServiceBindingUsages(s.testID), state),
 		testsuite.NewCreateSubscription(s.testID, s.testID, lambdaEndpoint, eventingClientset.EventingV1alpha1().Subscriptions(s.testID)),
-		testsuite.NewSendEvent(s.testID, state),
+		testsuite.NewSendEventToMesh(s.testID, state),
 		testsuite.NewCheckCounterPod(testService),
 	}, nil
 }
 
-type e2EState struct {
+type e2EEventMeshState struct {
 	domain        string
 	skipSSLVerify bool
 	appName       string
@@ -121,32 +118,32 @@ type e2EState struct {
 	eventSender         *testkit.EventSender
 }
 
-func (s *E2E) NewState() *e2EState {
-	return &e2EState{domain: s.domain, skipSSLVerify: s.skipSSLVerify, appName: s.testID}
+func (s *E2EEventMesh) NewState() *e2EEventMeshState {
+	return &e2EEventMeshState{domain: s.domain, skipSSLVerify: s.skipSSLVerify, appName: s.testID}
 }
 
 // SetServiceClassID allows to set ServiceClassID so it can be shared between steps
-func (s *e2EState) SetServiceClassID(serviceID string) {
+func (s *e2EEventMeshState) SetServiceClassID(serviceID string) {
 	s.serviceClassID = serviceID
 }
 
 // GetServiceClassID allows to get ServiceClassID so it can be shared between steps
-func (s *e2EState) GetServiceClassID() string {
+func (s *e2EEventMeshState) GetServiceClassID() string {
 	return s.serviceClassID
 }
 
 // SetServiceInstanceName allows to set ServiceInstanceName so it can be shared between steps
-func (s *e2EState) SetServiceInstanceName(serviceID string) {
+func (s *e2EEventMeshState) SetServiceInstanceName(serviceID string) {
 	s.serviceInstanceName = serviceID
 }
 
 // GetServiceInstanceName allows to get ServiceInstanceName so it can be shared between steps
-func (s *e2EState) GetServiceInstanceName() string {
+func (s *e2EEventMeshState) GetServiceInstanceName() string {
 	return s.serviceInstanceName
 }
 
 // SetGatewayClientCerts allows to set application gateway client certificates so they can be used by later steps
-func (s *e2EState) SetGatewayClientCerts(certs []tls.Certificate) {
+func (s *e2EEventMeshState) SetGatewayClientCerts(certs []tls.Certificate) {
 	httpClient := internal.NewHTTPClient(s.skipSSLVerify)
 	httpClient.Transport.(*http.Transport).TLSClientConfig.Certificates = certs
 	resilientHTTPClient := resilient.WrapHttpClient(httpClient)
@@ -156,11 +153,11 @@ func (s *e2EState) SetGatewayClientCerts(certs []tls.Certificate) {
 }
 
 // GetRegistryClient returns connected RegistryClient
-func (s *e2EState) GetRegistryClient() *testkit.RegistryClient {
+func (s *e2EEventMeshState) GetRegistryClient() *testkit.RegistryClient {
 	return s.registryClient
 }
 
 // GetEventSender returns connected EventSender
-func (s *e2EState) GetEventSender() *testkit.EventSender {
+func (s *e2EEventMeshState) GetEventSender() *testkit.EventSender {
 	return s.eventSender
 }

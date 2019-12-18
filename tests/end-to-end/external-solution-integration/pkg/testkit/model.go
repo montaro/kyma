@@ -129,6 +129,8 @@ type ExampleEvent struct {
 	Data             string    `json:"data"`
 }
 
+type ExampleCloudEvent
+
 func parseErrorResponse(response *http.Response) error {
 	errorResponse := &ErrorResponse{}
 	err := json.NewDecoder(response.Body).Decode(errorResponse)

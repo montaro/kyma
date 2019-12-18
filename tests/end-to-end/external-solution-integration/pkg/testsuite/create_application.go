@@ -2,10 +2,10 @@ package testsuite
 
 import (
 	"fmt"
-
 	"github.com/avast/retry-go"
 	acApi "github.com/kyma-project/kyma/components/application-operator/pkg/apis/applicationconnector/v1alpha1"
 	acClient "github.com/kyma-project/kyma/components/application-operator/pkg/client/clientset/versioned/typed/applicationconnector/v1alpha1"
+	sourcesclientv1alpha1 "github.com/kyma-project/kyma/components/event-sources/client/generated/clientset/internalclientset/typed/sources/v1alpha1"
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/helpers"
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/step"
 	"github.com/pkg/errors"
@@ -15,6 +15,7 @@ import (
 // CreateApplication is a step which creates new Application
 type CreateApplication struct {
 	applications     acClient.ApplicationInterface
+	httpSources      sourcesclientv1alpha1.HTTPSourceInterface
 	skipInstallation bool
 	name             string
 	accessLabel      string
@@ -25,10 +26,12 @@ type CreateApplication struct {
 var _ step.Step = &CreateApplication{}
 
 // NewCreateApplication returns new CreateApplication
-func NewCreateApplication(name, accessLabel string, skipInstallation bool, tenant, group string, applications acClient.ApplicationInterface) *CreateApplication {
+func NewCreateApplication(name, accessLabel string, skipInstallation bool, tenant, group string,
+	applications acClient.ApplicationInterface, httpSourceClient sourcesclientv1alpha1.HTTPSourceInterface) *CreateApplication {
 	return &CreateApplication{
 		name:             name,
 		applications:     applications,
+		httpSources: httpSourceClient,
 		skipInstallation: skipInstallation,
 		accessLabel:      accessLabel,
 		tenant:           tenant,
@@ -67,12 +70,18 @@ func (s *CreateApplication) Run() error {
 
 func (s *CreateApplication) isApplicationReady() error {
 	application, err := s.applications.Get(s.name, v1.GetOptions{})
+	httpSource, err := s.httpSources.Get(s.name, v1.GetOptions{})
+
 	if err != nil {
 		return err
 	}
 
 	if application.Status.InstallationStatus.Status == "DEPLOYED" {
 		return errors.Errorf("unexpected installation status: %s", application.Status.InstallationStatus.Status)
+	}
+
+	if !httpSource.Status.IsReady() {
+		return errors.Errorf("httpSource is not ready: %v", httpSource.Status)
 	}
 
 	return nil

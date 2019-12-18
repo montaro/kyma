@@ -20,6 +20,7 @@ import (
 var scenarios = map[string]scenario.Scenario{
 	"e2e":        &scenario.E2E{},
 	"event-only": &scenario.SendEventAndCheckCounter{},
+	"e2e-event-mesh": &scenario.E2EEventMesh{},
 }
 
 var (
