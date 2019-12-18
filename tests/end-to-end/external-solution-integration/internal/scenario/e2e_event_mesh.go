@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/pflag"
 	coreClient "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	eventing "knative.dev/eventing/pkg/client/clientset/versioned"
 )
 
 // E2E executes complete external solution integration test scenario
@@ -61,6 +62,7 @@ func (s *E2EEventMesh) Steps(config *rest.Config) ([]step.Step, error) {
 	gatewayClientset := gatewayClient.NewForConfigOrDie(config)
 	connectionTokenHandlerClientset := connectionTokenHandlerClient.NewForConfigOrDie(config)
 	httpSourceClientset := sourcesclientv1alpha1.NewForConfigOrDie(config)
+	knativeBrokerClientSet := eventing.NewForConfigOrDie(config)
 
 	connector := testkit.NewConnectorClient(
 		s.testID,
@@ -100,7 +102,9 @@ func (s *E2EEventMesh) Steps(config *rest.Config) ([]step.Step, error) {
 			state,
 		),
 		testsuite.NewCreateServiceBinding(s.testID, serviceCatalogClientset.ServicecatalogV1beta1().ServiceBindings(s.testID), state),
-		testsuite.NewCreateServiceBindingUsage(s.testID, s.testID, s.testID, serviceBindingUsageClientset.ServicecatalogV1alpha1().ServiceBindingUsages(s.testID), state),
+		testsuite.NewCreateServiceBindingUsage(s.testID, s.testID, s.testID,
+			serviceBindingUsageClientset.ServicecatalogV1alpha1().ServiceBindingUsages(s.testID), state,
+			knativeBrokerClientSet.EventingV1alpha1().Brokers(s.testID)),
 		testsuite.NewCreateSubscription(s.testID, s.testID, lambdaEndpoint, eventingClientset.EventingV1alpha1().Subscriptions(s.testID)),
 		testsuite.NewSendEventToMesh(s.testID, state),
 		testsuite.NewCheckCounterPod(testService),

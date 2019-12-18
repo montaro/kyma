@@ -81,7 +81,7 @@ func (s *CreateApplication) isApplicationReady() error {
 	}
 
 	if !httpSource.Status.IsReady() {
-		return errors.Errorf("httpSource is not ready: %v", httpSource.Status)
+		return errors.Errorf("httpSource is not ready: $")
 	}
 
 	return nil

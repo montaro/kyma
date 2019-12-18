@@ -8,11 +8,13 @@ import (
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/step"
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"knative.dev/eventing/pkg/client/clientset/versioned/typed/eventing/v1alpha1"
 )
 
 // CreateLambdaServiceBindingUsage is a step which creates new ServiceBindingUsage
 type CreateLambdaServiceBindingUsage struct {
 	serviceBindingUsages serviceBindingUsageClient.ServiceBindingUsageInterface
+	broker               v1alpha1.BrokerInterface
 	state                CreateServiceBindingUsageState
 	name                 string
 	serviceBindingName   string
@@ -27,9 +29,12 @@ type CreateServiceBindingUsageState interface {
 var _ step.Step = &CreateLambdaServiceBindingUsage{}
 
 // NewCreateServiceBindingUsage returns new CreateLambdaServiceBindingUsage
-func NewCreateServiceBindingUsage(name, serviceBindingName, lambdaName string, serviceBindingUsages serviceBindingUsageClient.ServiceBindingUsageInterface, state CreateServiceBindingUsageState) *CreateLambdaServiceBindingUsage {
+func NewCreateServiceBindingUsage(name, serviceBindingName, lambdaName string,
+	serviceBindingUsages serviceBindingUsageClient.ServiceBindingUsageInterface,
+	state CreateServiceBindingUsageState, knativeBroker v1alpha1.BrokerInterface) *CreateLambdaServiceBindingUsage {
 	return &CreateLambdaServiceBindingUsage{
 		serviceBindingUsages: serviceBindingUsages,
+		broker:               knativeBroker,
 		state:                state,
 		name:                 name,
 		serviceBindingName:   serviceBindingName,
@@ -76,6 +81,7 @@ func (s *CreateLambdaServiceBindingUsage) Run() error {
 
 func (s *CreateLambdaServiceBindingUsage) isServiceBindingUsageReady() error {
 	sbu, err := s.serviceBindingUsages.Get(s.name, metav1.GetOptions{})
+
 	if err != nil {
 		return err
 	}
@@ -88,6 +94,16 @@ func (s *CreateLambdaServiceBindingUsage) isServiceBindingUsageReady() error {
 			break
 		}
 	}
+
+	knativeBroker, err := s.broker.Get("default", metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	if !knativeBroker.Status.IsReady() {
+		return errors.Errorf("default knative broker in %s namespace is not ready", knativeBroker.Namespace)
+	}
+
 	return nil
 }
 

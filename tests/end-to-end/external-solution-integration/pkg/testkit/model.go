@@ -129,7 +129,15 @@ type ExampleEvent struct {
 	Data             string    `json:"data"`
 }
 
-type ExampleCloudEvent
+type ExampleEventToMesh struct {
+	SpecVersion      string `json:"specversion"`
+	EventType        string `json:"type"`
+	EventSource      string `json:"source"`
+	EventTypeVersion string `json:"eventtypeversion"`
+	EventId          string `json:"id"`
+	DataContentType  string `json:"datacontenttype"`
+	Data             string `json:"data"`
+}
 
 func parseErrorResponse(response *http.Response) error {
 	errorResponse := &ErrorResponse{}
