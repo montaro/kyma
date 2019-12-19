@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	cloudevents "github.com/cloudevents/sdk-go"
 	"github.com/kyma-project/kyma/common/resilient"
 	"github.com/pkg/errors"
 )
@@ -49,10 +50,9 @@ func (s *EventSender) SendEvent(appName string, event *ExampleEvent) error {
 	return nil
 }
 
-func (s *EventSender) SendEventToMesh(appName string, event *ExampleEventToMesh) error {
+func (s *EventSender) SendEventToMesh(appName string, event *cloudevents.Event) error {
 	body, err := json.Marshal(event)
 
-	fmt.Printf("Request sent to Event Gateway: %v", string(body))
 	if err != nil {
 		return err
 	}
