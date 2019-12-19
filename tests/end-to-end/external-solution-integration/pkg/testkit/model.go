@@ -135,7 +135,6 @@ type ExampleEventToMesh struct {
 	EventSource      string `json:"source"`
 	EventTypeVersion string `json:"eventtypeversion"`
 	EventId          string `json:"id"`
-	DataContentType  string `json:"datacontenttype"`
 	Data             string `json:"data"`
 }
 

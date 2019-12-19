@@ -37,8 +37,7 @@ func (s *SendEventToMesh) prepareEvent() *testkit.ExampleEventToMesh {
 		EventSource:      s.appName,
 		EventTypeVersion: example_schema.EventVersion,
 		EventId:          "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-		DataContentType:  "text/xml",
-		Data:             "<much wow=\"xml\"/>",
+		Data:             "data",
 	}
 }
 

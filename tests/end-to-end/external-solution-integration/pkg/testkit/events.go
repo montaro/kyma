@@ -51,6 +51,8 @@ func (s *EventSender) SendEvent(appName string, event *ExampleEvent) error {
 
 func (s *EventSender) SendEventToMesh(appName string, event *ExampleEventToMesh) error {
 	body, err := json.Marshal(event)
+
+	fmt.Printf("Request sent to Event Gateway: %v", string(body))
 	if err != nil {
 		return err
 	}
@@ -61,7 +63,7 @@ func (s *EventSender) SendEventToMesh(appName string, event *ExampleEventToMesh)
 		return err
 	}
 
-	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Content-Type", "application/cloudevents+json")
 
 	response, err := s.httpClient.Do(request)
 	if err != nil {

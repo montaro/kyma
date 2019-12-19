@@ -31,7 +31,7 @@ import (
 
 const (
 	kymaIntegrationNamespace = "kyma-integration"
-	defaultBrokerName        = "defaut"
+	defaultBrokerName        = "default"
 )
 
 // E2E executes complete external solution integration test scenario
@@ -46,7 +46,7 @@ type E2EEventMesh struct {
 // AddFlags adds CLI flags to given FlagSet
 func (s *E2EEventMesh) AddFlags(set *pflag.FlagSet) {
 	pflag.StringVar(&s.domain, "domain", "kyma.local", "domain")
-	pflag.StringVar(&s.testID, "testID", "e2e-mesh-b", "domain")
+	pflag.StringVar(&s.testID, "testID", "e2e-mesh-g", "domain")
 	pflag.BoolVar(&s.skipSSLVerify, "skipSSLVerify", false, "Skip verification of service SSL certificates")
 	pflag.StringVar(&s.applicationTenant, "applicationTenant", "", "Application CR Tenant")
 	pflag.StringVar(&s.applicationGroup, "applicationGroup", "", "Application CR Group")
