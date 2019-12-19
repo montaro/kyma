@@ -3,8 +3,9 @@ package scenario
 import (
 	"crypto/tls"
 	"fmt"
-	sourcesclientv1alpha1 "github.com/kyma-project/kyma/components/event-sources/client/generated/clientset/internalclientset/typed/sources/v1alpha1"
 	"net/http"
+
+	sourcesclientv1alpha1 "github.com/kyma-project/kyma/components/event-sources/client/generated/clientset/internalclientset/typed/sources/v1alpha1"
 
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/helpers"
 
@@ -107,7 +108,7 @@ func (s *E2EEventMesh) Steps(config *rest.Config) ([]step.Step, error) {
 		testsuite.NewCreateServiceBindingUsage(s.testID, s.testID, s.testID,
 			serviceBindingUsageClientset.ServicecatalogV1alpha1().ServiceBindingUsages(s.testID), state,
 			knativeEventingClientSet.EventingV1alpha1().Brokers(s.testID), knativeEventingClientSet.MessagingV1alpha1().Subscriptions(kymaIntegrationNamespace)),
-		testsuite.NewCreateKnativeTrigger(s.testID, defaultBrokerName,lambdaEndpoint, knativeEventingClientSet.EventingV1alpha1().Triggers(s.testID)),
+		testsuite.NewCreateKnativeTrigger(s.testID, defaultBrokerName, lambdaEndpoint, knativeEventingClientSet.EventingV1alpha1().Triggers(s.testID)),
 		testsuite.NewSendEventToMesh(s.testID, state),
 		testsuite.NewCheckCounterPod(testService),
 	}, nil
