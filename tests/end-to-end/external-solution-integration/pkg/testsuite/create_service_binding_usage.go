@@ -105,18 +105,6 @@ func (s *CreateLambdaServiceBindingUsage) isServiceBindingUsageReady() error {
 		}
 	}
 
-	if s.broker != nil {
-		knativeBroker, err := s.broker.Get("default", metav1.GetOptions{})
-		if err != nil {
-			return err
-		}
-
-		if !knativeBroker.Status.IsReady() {
-			return errors.Errorf("default knative broker in %s namespace is not ready", knativeBroker.Namespace)
-		}
-
-	}
-
 	knativeSubscriptionLabels := make(map[string]string)
 	knativeSubscriptionLabels[applicationName] = s.name
 	knativeSubscriptionLabels[brokerNamespace] = s.name
@@ -132,6 +120,26 @@ func (s *CreateLambdaServiceBindingUsage) isServiceBindingUsageReady() error {
 		if length := len(knativeSubscription.Items); length == 0 || length > 1 {
 			return errors.Errorf("unexpected number of knative subscriptions were found.\n Number of knative Subscriptions: %d", length)
 		}
+	}
+
+	return retry.Do(s.isBrokerReady)
+	//return nil
+}
+
+func (s *CreateLambdaServiceBindingUsage) isBrokerReady() error {
+	if s.broker != nil {
+		knativeBroker, err := s.broker.Get("default", metav1.GetOptions{})
+		if err != nil {
+			return err
+		}
+
+		if !knativeBroker.Status.IsReady() {
+			return errors.Errorf("default knative broker in %s namespace is not ready", knativeBroker.Namespace)
+		}
+
+	} else {
+		//TODO Get the namespace here
+		return errors.Errorf("default knative broker in namespace is not found")
 	}
 	return nil
 }

@@ -1,9 +1,11 @@
 package testsuite
 
 import (
+	"time"
+
+	cloudevents "github.com/cloudevents/sdk-go"
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/internal/example_schema"
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/step"
-	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/testkit"
 )
 
 // SendEvent is a step which sends example event to the application gateway
@@ -30,15 +32,18 @@ func (s *SendEventToMesh) Run() error {
 	return s.state.GetEventSender().SendEventToMesh(s.appName, event)
 }
 
-func (s *SendEventToMesh) prepareEvent() *testkit.ExampleEventToMesh {
-	return &testkit.ExampleEventToMesh{
-		SpecVersion:      "1.0",
-		EventType:        example_schema.EventType,
-		EventSource:      s.appName,
-		EventTypeVersion: example_schema.EventVersion,
-		EventId:          "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-		Data:             "data",
-	}
+func (s *SendEventToMesh) prepareEvent() *cloudevents.Event {
+	event := cloudevents.NewEvent(cloudevents.VersionV1)
+	data := "some data"
+	event.SetID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+	event.SetType(example_schema.EventType)
+	event.SetSource("some source")
+	event.SetData(data)
+	event.SetTime(time.Now())
+	event.SetExtension("eventtypeversion", example_schema.EventVersion)
+	event.Validate()
+
+	return &event
 }
 
 // Cleanup removes all resources that may possibly created by the step
