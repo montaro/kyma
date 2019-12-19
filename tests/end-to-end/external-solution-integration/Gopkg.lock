@@ -128,6 +128,27 @@
   version = "v0.2.1"
 
 [[projects]]
+  digest = "1:9b33df68643da136000e03a390b09f9412acda3eb7031c1187f3975b04ca6e9f"
+  name = "github.com/cloudevents/sdk-go"
+  packages = [
+    ".",
+    "pkg/cloudevents",
+    "pkg/cloudevents/client",
+    "pkg/cloudevents/context",
+    "pkg/cloudevents/datacodec",
+    "pkg/cloudevents/datacodec/json",
+    "pkg/cloudevents/datacodec/text",
+    "pkg/cloudevents/datacodec/xml",
+    "pkg/cloudevents/observability",
+    "pkg/cloudevents/transport",
+    "pkg/cloudevents/transport/http",
+    "pkg/cloudevents/types",
+  ]
+  pruneopts = "UT"
+  revision = "423680168ea46409121b5ef13ad563d4f0539fcb"
+  version = "v0.10.2"
+
+[[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -1447,6 +1468,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/avast/retry-go",
+    "github.com/cloudevents/sdk-go",
     "github.com/hashicorp/errwrap",
     "github.com/hashicorp/go-multierror",
     "github.com/kubeless/kubeless/pkg/apis/kubeless/v1beta1",
@@ -1493,8 +1515,12 @@
     "k8s.io/client-go/kubernetes/typed/core/v1",
     "k8s.io/client-go/plugin/pkg/client/auth/gcp",
     "k8s.io/client-go/rest",
+    "knative.dev/eventing/pkg/apis/eventing/v1alpha1",
     "knative.dev/eventing/pkg/client/clientset/versioned",
     "knative.dev/eventing/pkg/client/clientset/versioned/typed/eventing/v1alpha1",
+    "knative.dev/eventing/pkg/client/clientset/versioned/typed/messaging/v1alpha1",
+    "knative.dev/pkg/apis",
+    "knative.dev/pkg/apis/v1alpha1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

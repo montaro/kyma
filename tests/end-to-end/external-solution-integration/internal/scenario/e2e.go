@@ -44,7 +44,7 @@ const (
 // AddFlags adds CLI flags to given FlagSet
 func (s *E2E) AddFlags(set *pflag.FlagSet) {
 	pflag.StringVar(&s.domain, "domain", "kyma.local", "domain")
-	pflag.StringVar(&s.testID, "testID", "e2e-mesh", "domain")
+	pflag.StringVar(&s.testID, "testID", "e2e", "domain")
 	pflag.BoolVar(&s.skipSSLVerify, "skipSSLVerify", false, "Skip verification of service SSL certificates")
 	pflag.StringVar(&s.applicationTenant, "applicationTenant", "", "Application CR Tenant")
 	pflag.StringVar(&s.applicationGroup, "applicationGroup", "", "Application CR Group")

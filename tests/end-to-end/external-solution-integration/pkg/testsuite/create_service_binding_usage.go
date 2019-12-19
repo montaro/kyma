@@ -137,9 +137,6 @@ func (s *CreateLambdaServiceBindingUsage) isBrokerReady() error {
 			return errors.Errorf("default knative broker in %s namespace is not ready", knativeBroker.Namespace)
 		}
 
-	} else {
-		//TODO Get the namespace here
-		return errors.Errorf("default knative broker in namespace is not found")
 	}
 	return nil
 }
