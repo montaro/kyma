@@ -17,7 +17,6 @@ import (
 	appBrokerClient "github.com/kyma-project/kyma/components/application-broker/pkg/client/clientset/versioned"
 	appOperatorClient "github.com/kyma-project/kyma/components/application-operator/pkg/client/clientset/versioned"
 	connectionTokenHandlerClient "github.com/kyma-project/kyma/components/connection-token-handler/pkg/client/clientset/versioned"
-	eventingClient "github.com/kyma-project/kyma/components/event-bus/generated/push/clientset/versioned"
 	serviceBindingUsageClient "github.com/kyma-project/kyma/components/service-binding-usage-controller/pkg/client/clientset/versioned"
 
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/step"
@@ -30,6 +29,11 @@ import (
 	eventing "knative.dev/eventing/pkg/client/clientset/versioned"
 )
 
+const (
+	kymaIntegrationNamespace = "kyma-integration"
+	defaultBrokerName        = "defaut"
+)
+
 // E2E executes complete external solution integration test scenario
 type E2EEventMesh struct {
 	domain            string
@@ -39,11 +43,10 @@ type E2EEventMesh struct {
 	applicationGroup  string
 }
 
-
 // AddFlags adds CLI flags to given FlagSet
 func (s *E2EEventMesh) AddFlags(set *pflag.FlagSet) {
 	pflag.StringVar(&s.domain, "domain", "kyma.local", "domain")
-	pflag.StringVar(&s.testID, "testID", "e2e-mesh", "domain")
+	pflag.StringVar(&s.testID, "testID", "e2e-mesh-b", "domain")
 	pflag.BoolVar(&s.skipSSLVerify, "skipSSLVerify", false, "Skip verification of service SSL certificates")
 	pflag.StringVar(&s.applicationTenant, "applicationTenant", "", "Application CR Tenant")
 	pflag.StringVar(&s.applicationGroup, "applicationGroup", "", "Application CR Group")
@@ -56,13 +59,12 @@ func (s *E2EEventMesh) Steps(config *rest.Config) ([]step.Step, error) {
 	kubelessClientset := kubelessClient.NewForConfigOrDie(config)
 	coreClientset := coreClient.NewForConfigOrDie(config)
 	pods := coreClientset.CoreV1().Pods(s.testID)
-	eventingClientset := eventingClient.NewForConfigOrDie(config)
 	serviceCatalogClientset := serviceCatalogClient.NewForConfigOrDie(config)
 	serviceBindingUsageClientset := serviceBindingUsageClient.NewForConfigOrDie(config)
 	gatewayClientset := gatewayClient.NewForConfigOrDie(config)
 	connectionTokenHandlerClientset := connectionTokenHandlerClient.NewForConfigOrDie(config)
 	httpSourceClientset := sourcesclientv1alpha1.NewForConfigOrDie(config)
-	knativeBrokerClientSet := eventing.NewForConfigOrDie(config)
+	knativeEventingClientSet := eventing.NewForConfigOrDie(config)
 
 	connector := testkit.NewConnectorClient(
 		s.testID,
@@ -87,7 +89,7 @@ func (s *E2EEventMesh) Steps(config *rest.Config) ([]step.Step, error) {
 			testsuite.NewCreateNamespace(s.testID, coreClientset.CoreV1().Namespaces()),
 			testsuite.NewCreateApplication(s.testID, s.testID, false, s.applicationTenant,
 				s.applicationGroup, appOperatorClientset.ApplicationconnectorV1alpha1().Applications(),
-				httpSourceClientset.HTTPSources(s.testID)),
+				httpSourceClientset.HTTPSources(kymaIntegrationNamespace)),
 		),
 		step.Parallel(
 			testsuite.NewCreateMapping(s.testID, appBrokerClientset.ApplicationconnectorV1alpha1().ApplicationMappings(s.testID)),
@@ -104,8 +106,8 @@ func (s *E2EEventMesh) Steps(config *rest.Config) ([]step.Step, error) {
 		testsuite.NewCreateServiceBinding(s.testID, serviceCatalogClientset.ServicecatalogV1beta1().ServiceBindings(s.testID), state),
 		testsuite.NewCreateServiceBindingUsage(s.testID, s.testID, s.testID,
 			serviceBindingUsageClientset.ServicecatalogV1alpha1().ServiceBindingUsages(s.testID), state,
-			knativeBrokerClientSet.EventingV1alpha1().Brokers(s.testID)),
-		testsuite.NewCreateSubscription(s.testID, s.testID, lambdaEndpoint, eventingClientset.EventingV1alpha1().Subscriptions(s.testID)),
+			knativeEventingClientSet.EventingV1alpha1().Brokers(s.testID), knativeEventingClientSet.MessagingV1alpha1().Subscriptions(kymaIntegrationNamespace)),
+		testsuite.NewCreateKnativeTrigger(s.testID, defaultBrokerName,lambdaEndpoint, knativeEventingClientSet.EventingV1alpha1().Triggers(s.testID)),
 		testsuite.NewSendEventToMesh(s.testID, state),
 		testsuite.NewCheckCounterPod(testService),
 	}, nil

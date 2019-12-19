@@ -10,6 +10,7 @@ import (
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/step"
 	"github.com/pkg/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 )
 
 // CreateApplication is a step which creates new Application
@@ -31,7 +32,7 @@ func NewCreateApplication(name, accessLabel string, skipInstallation bool, tenan
 	return &CreateApplication{
 		name:             name,
 		applications:     applications,
-		httpSources: httpSourceClient,
+		httpSources:      httpSourceClient,
 		skipInstallation: skipInstallation,
 		accessLabel:      accessLabel,
 		tenant:           tenant,
@@ -65,12 +66,11 @@ func (s *CreateApplication) Run() error {
 		return err
 	}
 
-	return retry.Do(s.isApplicationReady)
+	return retry.Do(s.isApplicationReady, retry.Delay(time.Duration(200) * time.Millisecond))
 }
 
 func (s *CreateApplication) isApplicationReady() error {
 	application, err := s.applications.Get(s.name, v1.GetOptions{})
-	httpSource, err := s.httpSources.Get(s.name, v1.GetOptions{})
 
 	if err != nil {
 		return err
@@ -80,10 +80,17 @@ func (s *CreateApplication) isApplicationReady() error {
 		return errors.Errorf("unexpected installation status: %s", application.Status.InstallationStatus.Status)
 	}
 
-	if !httpSource.Status.IsReady() {
-		return errors.Errorf("httpSource is not ready: $")
-	}
-
+	//if s.httpSources != nil {
+	//	httpSource, err := s.httpSources.Get(s.name, v1.GetOptions{})
+	//	if err != nil {
+	//		return err
+	//	}
+	//	fmt.Printf( "Installation Status: %s \n", httpSource.Status.IsReady())
+	//	fmt.Printf( "HTTPSource Status: %s \n", httpSource.Status)
+	//	if !httpSource.Status.IsReady() {
+	//		return errors.Errorf("httpSource is not ready")
+	//	}
+	//}
 	return nil
 }
 

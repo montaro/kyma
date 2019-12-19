@@ -76,7 +76,7 @@ func setupLogging() {
 
 func setupFlags(s scenario.Scenario) {
 	var err error
-	kubeconfigFlags := genericclioptions.NewConfigFlags()
+	kubeconfigFlags := genericclioptions.NewConfigFlags(false)
 	kubeconfigFlags.AddFlags(pflag.CommandLine)
 	runner.AddFlags(pflag.CommandLine)
 	s.AddFlags(pflag.CommandLine)

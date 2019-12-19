@@ -11,14 +11,21 @@ required = [
   version = "v0.1.41"
 
 [[constraint]]
-    name = "github.com/avast/retry-go"
-    version = "2.4.1"
+  name = "k8s.io/api"
+  version = "kubernetes-1.15.3"
 
 [[constraint]]
-  name = "knative.dev/eventing"
-  version = "v0.10.0"
+  name = "k8s.io/apimachinery"
+  version = "kubernetes-1.15.3"
 
-[[override]]
-  name = "github.com/golang/protobuf"
-  version = "v1.3.2"
+[[constraint]]
+  name = "k8s.io/client-go"
+  version = "kubernetes-1.15.3"
 
+[[constraint]]
+  name = "k8s.io/cli-runtime"
+  version = "kubernetes-1.15.3"
+
+[[constraint]]
+    name = "github.com/avast/retry-go"
+    version = "2.4.1"

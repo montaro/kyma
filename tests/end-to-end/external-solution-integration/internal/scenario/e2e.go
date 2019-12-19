@@ -3,7 +3,6 @@ package scenario
 import (
 	"crypto/tls"
 	"fmt"
-	sourcesclientv1alpha1 "github.com/kyma-project/kyma/components/event-sources/client/generated/clientset/internalclientset/typed/sources/v1alpha1"
 	"net/http"
 
 	"github.com/kyma-project/kyma/tests/end-to-end/external-solution-integration/pkg/helpers"
@@ -63,7 +62,6 @@ func (s *E2E) Steps(config *rest.Config) ([]step.Step, error) {
 	serviceBindingUsageClientset := serviceBindingUsageClient.NewForConfigOrDie(config)
 	gatewayClientset := gatewayClient.NewForConfigOrDie(config)
 	connectionTokenHandlerClientset := connectionTokenHandlerClient.NewForConfigOrDie(config)
-	httpSourceClientset := sourcesclientv1alpha1.NewForConfigOrDie(config)
 
 	connector := testkit.NewConnectorClient(
 		s.testID,
@@ -88,7 +86,7 @@ func (s *E2E) Steps(config *rest.Config) ([]step.Step, error) {
 			testsuite.NewCreateNamespace(s.testID, coreClientset.CoreV1().Namespaces()),
 			testsuite.NewCreateApplication(s.testID, s.testID, false, s.applicationTenant,
 				s.applicationGroup, appOperatorClientset.ApplicationconnectorV1alpha1().Applications(),
-				httpSourceClientset.HTTPSources(s.testID)),
+				nil),
 		),
 		step.Parallel(
 			testsuite.NewCreateMapping(s.testID, appBrokerClientset.ApplicationconnectorV1alpha1().ApplicationMappings(s.testID)),
@@ -103,7 +101,7 @@ func (s *E2E) Steps(config *rest.Config) ([]step.Step, error) {
 			state,
 		),
 		testsuite.NewCreateServiceBinding(s.testID, serviceCatalogClientset.ServicecatalogV1beta1().ServiceBindings(s.testID), state),
-		testsuite.NewCreateServiceBindingUsage(s.testID, s.testID, s.testID, serviceBindingUsageClientset.ServicecatalogV1alpha1().ServiceBindingUsages(s.testID), state),
+		testsuite.NewCreateServiceBindingUsage(s.testID, s.testID, s.testID, serviceBindingUsageClientset.ServicecatalogV1alpha1().ServiceBindingUsages(s.testID), state, nil, nil),
 		testsuite.NewCreateSubscription(s.testID, s.testID, lambdaEndpoint, eventingClientset.EventingV1alpha1().Subscriptions(s.testID)),
 		testsuite.NewSendEvent(s.testID, state),
 		testsuite.NewCheckCounterPod(testService),
